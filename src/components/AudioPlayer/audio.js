@@ -99,12 +99,6 @@ const audio = (WrappedComponent) => {
                     } else {
                         buffer = chunk;
                     }
-                    // audioContext.decodeAudioData(chunk)
-                    //     .then((audioBufferChunk) => {
-                    //         audioBuffer = audioBuffer
-                    //             ? appendBuffer(audioBuffer, audioBufferChunk)
-                    //             : audioBufferChunk;
-                    //     });
                 });
 
                 stream.on('end', function () {
