@@ -24,8 +24,8 @@ const audio = (WrappedComponent) => {
         const {audioContext} = getAudioContext();
 
         // const [player, setPlayer] = useState(null);
-        let audioBuffer = null;
-        let source = null;
+        let sources = [];
+        let isPlaying = false;
 
 
         const concat = (buffer1, buffer2) => {
@@ -69,15 +69,16 @@ const audio = (WrappedComponent) => {
             return concat(header, data);
         };
 
-        const appendBuffer = (buffer1, buffer2) => {
-            const numberOfChannels = Math.min(buffer1.numberOfChannels, buffer2.numberOfChannels);
-            const tmp = audioContext.createBuffer(numberOfChannels, (buffer1.length + buffer2.length), buffer1.sampleRate);
-            for (let i = 0; i < numberOfChannels; i++) {
-                const channel = tmp.getChannelData(i);
-                channel.set(buffer1.getChannelData(i), 0);
-                channel.set(buffer2.getChannelData(i), buffer1.length);
+        const play = () => {
+            if(sources.length === 0) {
+                isPlaying = false;
+                return;
             }
-            return tmp;
+
+            let source = sources.shift();
+
+            source.onended = play;
+            source.start();
         };
 
         const onPlayBtnClick = () => {
@@ -91,26 +92,28 @@ const audio = (WrappedComponent) => {
 
             ss(socket).on('track-stream', (stream, {stat}) => {
                 console.log("receiving data...");
-                let buffer = null;
 
                 stream.on('data', (chunk) => {
-                    if (buffer) {
-                        buffer = concat(buffer, chunk);
-                    } else {
-                        buffer = chunk;
-                    }
+                    audioContext.decodeAudioData(addWaveHeader(chunk, 44100, 2))
+                        .then((audioBufferChunk) => {
+
+                            let source = audioContext.createBufferSource();
+                            source.buffer = audioBufferChunk;
+
+                            source.connect(audioContext.destination);
+
+                            sources.push(source);
+
+                            if (!isPlaying) {
+                                isPlaying = true;
+
+                                play();
+                            }
+                        });
                 });
 
                 stream.on('end', function () {
-                    console.log(`audio received ${buffer}`);
-                    // debugger;
-                    const buffer$ = addWaveHeader(buffer, 44100, 2);
-                    audioContext.decodeAudioData(buffer$).then(b => {
-                        source = audioContext.createBufferSource();
-                        source.buffer = b;
-                        source.connect(audioContext.destination);
-                        source.start();
-                    });
+                    console.log(`audio received`);
                 });
             });
         };
