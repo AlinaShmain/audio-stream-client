@@ -1,0 +1,36 @@
+/*.top-nav-collapse {*/
+/*    background-color: #78909c !important;*/
+/*}*/
+
+/*.navbar:not(.top-nav-collapse) {*/
+/*    !*background-color: #000000 !important;*!*/
+/*}*/
+
+.navbar-nav li > a {
+    font-family: CyberspaceRacewayFront;
+    color: #fff;
+    transition: color .2s;
+    /*background: url('../text-bg.png') no-repeat center;*/
+    /*background-size: cover;*/
+    /*-webkit-background-clip: text;*/
+    /*-webkit-text-fill-color: transparent;*/
+    animation: appear 3s ease-out;
+}
+
+@keyframes appear {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.navbar-nav li > a:hover, a:focus, li.active > a {
+    color: #70FF00;
+}
+
+.nav-link {
+    padding-left: 100px !important;
+}
+

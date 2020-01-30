@@ -1,0 +1,72 @@
+.view {
+    height: 100%;
+    overflow:  hidden;
+    background: url('./image6.jpg') no-repeat center;
+    background-size: cover;
+}
+
+.rgba-gradient {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.welcome-header {
+    position: relative;
+    font-family: RocketRinder;
+    animation: fadeInDown 2s ease-out forwards;
+}
+
+@keyframes fadeInDown {
+    from {
+        top: 30%;
+        opacity: 0;
+    }
+    to {
+        top: 45%;
+        opacity: 1
+    }
+}
+
+.welcome-header h1 {
+    color: #fff;
+    font-size: 50px;
+}
+
+/*.parallelogram-button {*/
+/*    display: inline-block;*/
+/*    padding: .6em 1em;*/
+/*    border: 0;*/
+/*    margin-top: 40px;*/
+/*    background: #70FF00;*/
+/*    !*font-size: 20px;*!*/
+/*    transform: skew(-40deg);*/
+/*    text-decoration: none;*/
+/*}*/
+
+.welcome-header .parallelogram-button:hover {
+    box-shadow: 0 0 10px #70FF00;
+    animation: 1s ease-out pulse infinite;
+    cursor: pointer;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1) skew(-40deg);
+    }
+    25% {
+        transform: scale(1.1) skew(-40deg);
+    }
+    50% {
+        transform: scale(1) skew(-40deg);
+    }
+    85% {
+        transform: scale(0.9) skew(-40deg);
+    }
+}
+
+/*.skew-fix {*/
+/*    display: inline-block;*/
+/*    color: #000000;*/
+/*    transform: skew(40deg);*/
+/*    font-weight: 600;*/
+/*    font-size: 20px;*/
+/*}*/

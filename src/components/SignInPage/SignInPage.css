@@ -1,0 +1,166 @@
+.btn-google {
+    position: relative;
+    display: inline-block;
+    padding: 8px 27px 8px 50px;
+    margin: 20px 0 10px 0;
+    background-color: #fff;
+    border: 1px solid #000000;
+    border-radius: 10px;
+    font-family: Roboto;
+    font-size: 17px;
+}
+
+.btn-google:before {
+    position: absolute;
+    content: '';
+    width: 25px;
+    height: 25px;
+    top: 8px;
+    left: 10px;
+    background: url('../google.svg');
+}
+
+.div-line {
+    text-align: center;
+    position: relative;
+    margin-bottom: 10px;
+}
+
+.line {
+    display: inline-block;
+    margin: 0;
+}
+.line:before,
+.line:after {
+    border-top: 2px solid #6F716D;
+    display: block;
+    height: 1px;
+    content: " ";
+    width: 45%;
+    position: absolute;
+    left: 0;
+    top: 50%;
+    border-radius: 10px;
+}
+.line:after {
+    right: 0;
+    left: auto;
+}
+
+form p {
+    font-family: Roboto;
+    font-size: 20px;
+    color: #ffffff;
+    margin-bottom: 20px;
+}
+
+.auth .form-group {
+    margin-bottom: 25px;
+}
+
+.auth .form-control {
+    border-radius: 10px;
+}
+
+.auth .form-control:focus {
+    color: #495057;
+    background-color: transparent;
+    border-color: #70FF00;
+    outline: 0;
+    /*box-shadow: none;*/
+    box-shadow: 0 0 10px #70FF00;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 400;
+    -webkit-text-fill-color: #6F716D;
+    -webkit-box-shadow: 0 0 0 1000px transparent inset;
+    transition: background-color 5000s ease-in-out 0s;
+    background: -webkit-linear-gradient(top,  rgba(255,255,255,0) 0%,rgba(0,174,255,0.04) 50%,rgba(255,255,255,0) 51%,rgba(0,174,255,0.03) 100%);
+}
+
+.auth .input-group>.custom-select:not(:last-child), .auth .input-group>.form-control:not(:last-child) {
+     border-top-right-radius: 10px;
+     border-bottom-right-radius: 10px;
+}
+
+.auth .input-group-append {
+    border-radius: 10px;
+}
+
+.input-auth {
+    background: transparent;
+    position: relative;
+}
+
+.password-icon {
+    position: absolute;
+    top: 7px;
+    right: 8px;
+    z-index: 100;
+    cursor: default;
+}
+
+.forget-password {
+    color: white;
+    font-size: 1rem;
+}
+
+.checkbox input {
+    -webkit-appearance: none;
+    background-color: transparent;
+    border: 1px solid #cacece;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05), inset 0px -15px 10px -12px rgba(0,0,0,0.05);
+    padding: 9px;
+    border-radius: 3px;
+    display: inline-block;
+    position: relative;
+    vertical-align: sub;
+}
+
+.checkbox input:active, .checkbox input:checked:active {
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05), inset 0px 1px 3px rgba(0,0,0,0.1);
+}
+
+.checkbox input:focus {
+    outline:0;
+}
+
+.checkbox input:checked {
+    background-color: transparent;
+    border: 1px solid #ffffff;
+    /*box-shadow: none;*/
+    /*color: #99a1a7;*/
+}
+
+.checkbox input:checked:after {
+    font-family: 'Font Awesome\ 5 Free';
+    content: "\f00c";
+    font-size: 14px;
+    font-weight: 600;
+    position: absolute;
+    bottom: 0;
+    left: 2px;
+    color: #70FF00;
+}
+
+.checkbox span {
+    margin-left: 5px;
+    color: #ffffff;
+    font-size: 1rem;
+}
+
+.forget-password a {
+    color: #EC00E4;
+}

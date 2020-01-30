@@ -1,0 +1,33 @@
+@font-face {
+    font-family: 'CyberspaceRacewayFront';
+    src: url('./fonts/CyberspaceRacewayFront-lWGD.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'RocketRinder';
+    src: url('./fonts/RocketRinder-yV5d.ttf') format('truetype');
+}
+
+html, body, #root {
+    height: 100%;
+}
+
+.parallelogram-button {
+    display: inline-block;
+    padding: .6em 1em;
+    border: 0;
+    /*margin-top: 40px;*/
+    background: #70FF00;
+    /*font-size: 20px;*/
+    transform: skew(-40deg);
+    text-decoration: none;
+}
+
+.skew-fix {
+    display: inline-block;
+    color: #000000;
+    transform: skew(40deg);
+    font-weight: 600;
+    font-size: 20px;
+    font-family: RocketRinder;
+}
