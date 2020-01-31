@@ -54,7 +54,7 @@ const audio = (WrappedComponent) => {
             writeString(view, 12, 'fmt ');
 
             view.setUint32(16, 16, true);
-            view.setUint16(20, 0x0055, true); //WAVE_FORMAT_MPEGLAYER3 0x0055
+            view.setUint16(20, 0x0055, true); //WAVE_FORMAT_MPEGLAYER3
             view.setUint16(22, numberOfChannels, true);
             view.setUint32(24, sampleRate, true);
             view.setUint32(28, sampleRate * 1 * 2);
