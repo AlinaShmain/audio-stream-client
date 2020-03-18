@@ -30,8 +30,8 @@ const audio = (WrappedComponent) => {
         let lastChunkOffset = 0;
         let audioBuffer = null;
         const bufferSize = 6;
-        let playWhileLoadingDuration = 0;
-        let source = null;
+        // let playWhileLoadingDuration = 0;
+        // let source = null;
 
         const appendBuffer = (buffer1, buffer2) => {
             const numberOfChannels = Math.min(buffer1.numberOfChannels, buffer2.numberOfChannels);
@@ -65,9 +65,24 @@ const audio = (WrappedComponent) => {
             // return source;
         };
 
-        const playWhileLoading = () => {
-            // source.connect(audioContext.destination);
-            source.start(0, playWhileLoadingDuration);
+        const play = (offset = 0) => {
+            console.log('sources', sources);
+            if (sources.length === 0) {
+                isPlaying = false;
+                return;
+            }
+
+            let source = sources.shift();
+
+            source.onended = () => {
+                // source.stop();
+
+                let playWhileLoadingDuration = source.buffer.duration;
+
+                play(playWhileLoadingDuration);
+            };
+
+            source.start(0, offset, source.buffer.duration - offset);
         };
 
         const onPlayBtnClick = () => {
@@ -96,13 +111,7 @@ const audio = (WrappedComponent) => {
 
                         sources.push(source);
 
-                        source.onended = () => {
-                            let chunk_ = sources.shift();
-
-                            let previousDuration = sources.reduce((a, b) => a.buffer.duration + b.buffer.duration);
-
-                            chunk_.start(0, previousDuration, chunk_.buffer.duration);
-                        };
+                        
                     });
             });
         };
