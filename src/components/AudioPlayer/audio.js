@@ -32,6 +32,7 @@ const audio = (WrappedComponent) => {
         const bufferSize = 6;
         // let playWhileLoadingDuration = 0;
         // let source = null;
+        let chunks = [];
 
         const appendBuffer = (buffer1, buffer2) => {
             const numberOfChannels = Math.min(buffer1.numberOfChannels, buffer2.numberOfChannels);
@@ -42,27 +43,6 @@ const audio = (WrappedComponent) => {
                 channel.set(buffer2.getChannelData(i), buffer1.length);
             }
             return tmp;
-        };
-
-        const createChunk = (buffer) => {
-
-            // source = audioContext.createBufferSource();
-            // source.buffer = buffer;
-
-
-            // let source = audioContext.createBufferSource();
-            // source.buffer = chunk;
-            // source.connect(audioContext.destination);
-            // source.onended = () => {
-            //     sources.splice(sources.indexOf(source),1);
-            //     if (sources.length === 0) {
-            //         isPlaying = false;
-            //         startTime = 0;
-            //         lastChunkOffset = 0;
-            //     }
-            // };
-            //
-            // return source;
         };
 
         const play = (offset = 0) => {
@@ -76,26 +56,22 @@ const audio = (WrappedComponent) => {
 
             source.onended = () => {
                 // source.stop();
+                console.log('duration', source.buffer.duration);
 
                 let playWhileLoadingDuration = source.buffer.duration;
 
                 play(playWhileLoadingDuration);
             };
 
+            console.log('offset', offset);
+            console.log('duration of last chunk', source.buffer.duration - offset);
             source.start(0, offset, source.buffer.duration - offset);
         };
 
-        const onPlayBtnClick = () => {
-            // useCallback(() => {
-            dispatch(onPlay());
-
-            console.log(`Playing ${playerData.isPlaying}`);
-
-            socket.emit('track', (e) => {
-            });
-
-            socket.on('audio', (chunk) => {
-                console.log('receivedChunk', chunk);
+        const playWhileLoading = setInterval(() => {
+            console.log('chunks length', chunks.length);
+            if (chunks.length !== 0) {
+                let chunk = chunks.shift();
                 audioContext.decodeAudioData(chunk)
                     .then((audioBufferChunk) => {
                         console.log('decodedChunk', audioBufferChunk);
@@ -111,8 +87,29 @@ const audio = (WrappedComponent) => {
 
                         sources.push(source);
 
-                        
+                        if (!isPlaying) {
+                            isPlaying = true;
+
+                            play();
+                        }
                     });
+            }
+        }, 500);
+
+        const onPlayBtnClick = () => {
+            // useCallback(() => {
+            dispatch(onPlay());
+
+            console.log(`Playing ${playerData.isPlaying}`);
+
+            socket.emit('track', (e) => {
+            });
+
+            socket.on('audio', (chunk_) => {
+                console.log('receivedChunk', chunk_);
+                // debugger;
+
+                chunks.push(chunk_);
             });
         };
 
