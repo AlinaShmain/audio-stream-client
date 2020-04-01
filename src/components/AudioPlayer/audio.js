@@ -65,7 +65,7 @@ const audio = (WrappedComponent) => {
 
             console.log('offset', offset);
             console.log('duration of last chunk', source.buffer.duration - offset);
-            source.start(0, offset, source.buffer.duration - offset);
+            source.start(audioContext.currentTime, offset, source.buffer.duration - offset);
         };
 
         const playWhileLoading = setInterval(() => {
