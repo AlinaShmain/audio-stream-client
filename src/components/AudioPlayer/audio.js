@@ -33,6 +33,7 @@ const audio = (WrappedComponent) => {
         // let playWhileLoadingDuration = 0;
         // let source = null;
         let chunks = [];
+        let nextTime = 0;
 
         const appendBuffer = (buffer1, buffer2) => {
             const numberOfChannels = Math.min(buffer1.numberOfChannels, buffer2.numberOfChannels);
@@ -76,22 +77,26 @@ const audio = (WrappedComponent) => {
                     .then((audioBufferChunk) => {
                         console.log('decodedChunk', audioBufferChunk);
 
-                        audioBuffer = audioBuffer
-                            ? appendBuffer(audioBuffer, audioBufferChunk)
-                            : audioBufferChunk;
+                        // audioBuffer = audioBuffer
+                        //     ? appendBuffer(audioBuffer, audioBufferChunk)
+                        //     : audioBufferChunk;
 
                         let source = audioContext.createBufferSource();
-                        source.buffer = audioBuffer;
+                        source.buffer = audioBufferChunk;
 
                         source.connect(audioContext.destination);
 
-                        sources.push(source);
+                        startTime = audioContext.currentTime;
+                        source.start(nextTime);
+                        nextTime += source.buffer.duration - (audioContext.currentTime - startTime) ;
 
-                        if (!isPlaying) {
-                            isPlaying = true;
-
-                            play();
-                        }
+                        // sources.push(source);
+                        //
+                        // if (!isPlaying) {
+                        //     isPlaying = true;
+                        //
+                        //     play();
+                        // }
                     });
             }
         }, 500);
@@ -105,6 +110,7 @@ const audio = (WrappedComponent) => {
             socket.emit('track', (e) => {
             });
 
+            nextTime = 0;
             socket.on('audio', (chunk_) => {
                 console.log('receivedChunk', chunk_);
                 // debugger;
