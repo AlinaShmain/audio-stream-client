@@ -33,7 +33,9 @@ const audio = (WrappedComponent) => {
         // let playWhileLoadingDuration = 0;
         // let source = null;
         let chunks = [];
-        let nextTime = 0;
+        let nextTime = 0.01;
+        let times = [];
+        let i = 0;
 
         const appendBuffer = (buffer1, buffer2) => {
             const numberOfChannels = Math.min(buffer1.numberOfChannels, buffer2.numberOfChannels);
@@ -46,28 +48,28 @@ const audio = (WrappedComponent) => {
             return tmp;
         };
 
-        const play = (offset = 0) => {
-            console.log('sources', sources);
-            if (sources.length === 0) {
-                isPlaying = false;
-                return;
-            }
-
-            let source = sources.shift();
-
-            source.onended = () => {
-                // source.stop();
-                console.log('duration', source.buffer.duration);
-
-                let playWhileLoadingDuration = source.buffer.duration;
-
-                play(playWhileLoadingDuration);
-            };
-
-            console.log('offset', offset);
-            console.log('duration of last chunk', source.buffer.duration - offset);
-            source.start(audioContext.currentTime, offset, source.buffer.duration - offset);
-        };
+        // const play = (offset = 0) => {
+        //     console.log('sources', sources);
+        //     if (sources.length === 0) {
+        //         isPlaying = false;
+        //         return;
+        //     }
+        //
+        //     let source = sources.shift();
+        //
+        //     source.onended = () => {
+        //         // source.stop();
+        //         console.log('duration', source.buffer.duration);
+        //
+        //         let playWhileLoadingDuration = source.buffer.duration;
+        //
+        //         play(playWhileLoadingDuration);
+        //     };
+        //
+        //     console.log('offset', offset);
+        //     console.log('duration of last chunk', source.buffer.duration - offset);
+        //     source.start(audioContext.currentTime, offset, source.buffer.duration - offset);
+        // };
 
         const playWhileLoading = setInterval(() => {
             console.log('chunks length', chunks.length);
@@ -86,9 +88,21 @@ const audio = (WrappedComponent) => {
 
                         source.connect(audioContext.destination);
 
-                        startTime = audioContext.currentTime;
-                        source.start(nextTime);
-                        nextTime += source.buffer.duration - (audioContext.currentTime - startTime) ;
+                        // source.start(nextTime);
+                        // nextTime += (audioBufferChunk.duration - 0.01) ;
+
+                        if(times.length > 1) {
+                            times[i] = audioContext.currentTime;
+                            i++;
+                            // source.start( nextTime);
+                            source.start(nextTime  - (times[i - 1] - times[i - 2]));
+                            nextTime += audioBufferChunk.duration - 0.01;
+                        } else {
+                            times[i] = audioContext.currentTime;
+                            i++;
+                            source.start();
+                            nextTime += audioBufferChunk.duration - 0.01;
+                        }
 
                         // sources.push(source);
                         //
@@ -110,7 +124,10 @@ const audio = (WrappedComponent) => {
             socket.emit('track', (e) => {
             });
 
-            nextTime = 0;
+            nextTime = 0.01;
+            times = [];
+            i = 0;
+
             socket.on('audio', (chunk_) => {
                 console.log('receivedChunk', chunk_);
                 // debugger;
