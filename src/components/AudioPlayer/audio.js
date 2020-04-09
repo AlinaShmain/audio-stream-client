@@ -88,21 +88,21 @@ const audio = (WrappedComponent) => {
 
                         source.connect(audioContext.destination);
 
-                        // source.start(nextTime);
-                        // nextTime += (audioBufferChunk.duration - 0.01) ;
+                        source.start(startTime + nextTime);
+                        nextTime += (audioBufferChunk.duration - 0.01) ;
 
-                        if(times.length > 1) {
-                            times[i] = audioContext.currentTime;
-                            i++;
-                            // source.start( nextTime);
-                            source.start(nextTime  - (times[i - 1] - times[i - 2]));
-                            nextTime += audioBufferChunk.duration - 0.01;
-                        } else {
-                            times[i] = audioContext.currentTime;
-                            i++;
-                            source.start();
-                            nextTime += audioBufferChunk.duration - 0.01;
-                        }
+                        // if(times.length > 1) {
+                        //     times[i] = audioContext.currentTime;
+                        //     i++;
+                        //     // source.start( nextTime);
+                        //     source.start(nextTime  - (times[i - 1] - times[i - 2]));
+                        //     nextTime += audioBufferChunk.duration - 0.01;
+                        // } else {
+                        //     times[i] = audioContext.currentTime;
+                        //     i++;
+                        //     source.start();
+                        //     nextTime += audioBufferChunk.duration - 0.01;
+                        // }
 
                         // sources.push(source);
                         //
@@ -125,8 +125,9 @@ const audio = (WrappedComponent) => {
             });
 
             nextTime = 0.01;
-            times = [];
-            i = 0;
+            // times = [];
+            // i = 0;
+            startTime = audioContext.currentTime;
 
             socket.on('audio', (chunk_) => {
                 console.log('receivedChunk', chunk_);
