@@ -34,8 +34,7 @@ const audio = (WrappedComponent) => {
         // let source = null;
         let chunks = [];
         let nextTime = 0.01;
-        let times = [];
-        let i = 0;
+        let activeSource = null;
 
         const appendBuffer = (buffer1, buffer2) => {
             const numberOfChannels = Math.min(buffer1.numberOfChannels, buffer2.numberOfChannels);
@@ -48,29 +47,6 @@ const audio = (WrappedComponent) => {
             return tmp;
         };
 
-        // const play = (offset = 0) => {
-        //     console.log('sources', sources);
-        //     if (sources.length === 0) {
-        //         isPlaying = false;
-        //         return;
-        //     }
-        //
-        //     let source = sources.shift();
-        //
-        //     source.onended = () => {
-        //         // source.stop();
-        //         console.log('duration', source.buffer.duration);
-        //
-        //         let playWhileLoadingDuration = source.buffer.duration;
-        //
-        //         play(playWhileLoadingDuration);
-        //     };
-        //
-        //     console.log('offset', offset);
-        //     console.log('duration of last chunk', source.buffer.duration - offset);
-        //     source.start(audioContext.currentTime, offset, source.buffer.duration - offset);
-        // };
-
         const playWhileLoading = setInterval(() => {
             console.log('chunks length', chunks.length);
             if (chunks.length !== 0) {
@@ -79,38 +55,28 @@ const audio = (WrappedComponent) => {
                     .then((audioBufferChunk) => {
                         console.log('decodedChunk', audioBufferChunk);
 
-                        // audioBuffer = audioBuffer
-                        //     ? appendBuffer(audioBuffer, audioBufferChunk)
-                        //     : audioBufferChunk;
+                        audioBuffer = audioBuffer
+                            ? appendBuffer(audioBuffer, audioBufferChunk)
+                            : audioBufferChunk;
 
                         let source = audioContext.createBufferSource();
-                        source.buffer = audioBufferChunk;
+                        source.buffer = audioBuffer;
 
                         source.connect(audioContext.destination);
 
-                        source.start(startTime + nextTime);
-                        nextTime += (audioBufferChunk.duration - 0.01) ;
+                        sources.push(source);
 
-                        // if(times.length > 1) {
-                        //     times[i] = audioContext.currentTime;
-                        //     i++;
-                        //     // source.start( nextTime);
-                        //     source.start(nextTime  - (times[i - 1] - times[i - 2]));
-                        //     nextTime += audioBufferChunk.duration - 0.01;
-                        // } else {
-                        //     times[i] = audioContext.currentTime;
-                        //     i++;
-                        //     source.start();
-                        //     nextTime += audioBufferChunk.duration - 0.01;
-                        // }
+                        if(!activeSource) {
+                            activeSource = sources.shift();
+                        }
 
-                        // sources.push(source);
-                        //
-                        // if (!isPlaying) {
-                        //     isPlaying = true;
-                        //
-                        //     play();
-                        // }
+                        source.onended = () => {
+                            activeSource = sources.shift();
+                        };
+
+                        source.start(startTime + nextTime, );
+                        // source.start(startTime + nextTime);
+                        // nextTime += audioBufferChunk.duration;
                     });
             }
         }, 500);
@@ -124,9 +90,7 @@ const audio = (WrappedComponent) => {
             socket.emit('track', (e) => {
             });
 
-            nextTime = 0.01;
-            // times = [];
-            // i = 0;
+            nextTime = 0;
             startTime = audioContext.currentTime;
 
             socket.on('audio', (chunk_) => {
@@ -135,10 +99,16 @@ const audio = (WrappedComponent) => {
 
                 chunks.push(chunk_);
             });
+
+            socket.on('end', () => {
+                // clearInterval(playWhileLoading);
+            });
         };
 
         const onStopBtnClick = () => {
-            // source && source.stop(0);
+            // activeSource && activeSource.stop(0);
+            sources.forEach((source) => source.stop(0));
+
             console.log('Stop playing');
 
             dispatch(onPause());
