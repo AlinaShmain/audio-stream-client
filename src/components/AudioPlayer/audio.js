@@ -74,9 +74,10 @@ const audio = (WrappedComponent) => {
                             activeSource = sources.shift();
                         };
 
-                        source.start(startTime + nextTime, );
+                        console.log('audioBuffer', audioBufferChunk);
+                        source.start(startTime + nextTime, audioBuffer - audioBufferChunk, audioBufferChunk.duration);
                         // source.start(startTime + nextTime);
-                        // nextTime += audioBufferChunk.duration;
+                        nextTime += audioBufferChunk.duration;
                     });
             }
         }, 500);
