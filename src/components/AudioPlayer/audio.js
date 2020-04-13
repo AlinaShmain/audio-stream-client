@@ -75,7 +75,7 @@ const audio = (WrappedComponent) => {
                         };
 
                         console.log('audioBuffer', audioBufferChunk);
-                        source.start(startTime + nextTime, audioBuffer - audioBufferChunk, audioBufferChunk.duration);
+                        source.start(startTime + nextTime, audioBuffer.duration - audioBufferChunk.duration, audioBufferChunk.duration);
                         // source.start(startTime + nextTime);
                         nextTime += audioBufferChunk.duration;
                     });
@@ -102,6 +102,7 @@ const audio = (WrappedComponent) => {
             });
 
             socket.on('end', () => {
+
                 // clearInterval(playWhileLoading);
             });
         };
