@@ -14,6 +14,11 @@ export const onPause = () => ({
     type: types.ON_PAUSE,
 });
 
+export const onTimepointChange = (timepoint) => ({
+    type: types.ON_TIMEPOINT_CHANGE,
+    timepoint,
+});
+
 export function onTimeUpdate(currentTime) {
     return () => ({
         type: types.ON_TIME_UPDATE,

@@ -4,7 +4,7 @@ import {useDispatch, useSelector} from "react-redux";
 import ss from 'socket.io-stream';
 import socketClient from 'socket.io-client';
 
-import {onPlay, onPause, onTimeUpdate, onVolumeChange, playSong} from '../../actions/player';
+import {onPlay, onPause, onTimepointChange, onTimeUpdate, onVolumeChange, playSong} from '../../actions/player';
 
 const socket = socketClient('http://localhost:5000');
 
@@ -181,11 +181,16 @@ const audio = (WrappedComponent) => {
             console.log(`Playing ${playerData.isPlaying}`);
         };
 
+        const onTimepointChange = () => {
+            console.log('Timepoint change');
+        };
+
         return (
             <WrappedComponent
                 player={playerData}
                 onPlayBtnClick={onPlayBtnClick}
                 onStopBtnClick={onStopBtnClick}
+                onTimepointChange={{onTimepointChange}}
             />
         );
     };

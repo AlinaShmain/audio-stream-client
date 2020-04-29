@@ -7,6 +7,7 @@ const initialState = {
     muted: false,
     repeat: false,
     shuffle: false,
+    timepoint: 0,
     volume: 1,
     playingIndex: null,
     playlist: null,
@@ -23,6 +24,11 @@ export default function player(state = initialState, action) {
             return {
                 ...state,
                 isPlaying: true,
+            };
+        case types.ON_TIMEPOINT_CHANGE:
+            return {
+              ...state,
+              timepoint: action.timepoint,
             };
         case types.PLAY_SONG:
             return {
