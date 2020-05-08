@@ -1,10 +1,24 @@
 import * as types from '../constants/action_constants';
 
-// export function onPlay() {
-//     return () => ({
-//         type: types.ON_PLAY,
-//     });
-// }
+export const setSocket = (socket) => ({
+   type: types.SET_SOCKET,
+   socket
+});
+
+export const onChunkSizeUpdate = (chunkSize) => ({
+   type: types.ON_CHUNK_SIZE_UPDATE,
+   chunkSize
+});
+
+export const onTitleUpdate = (title) => ({
+    type: types.ON_TITLE_UPDATE,
+    title
+});
+
+export const onArtistUpdate = (artist) => ({
+    type: types.ON_ARTIST_UPDATE,
+    artist
+});
 
 export const onPlay = () => ({
     type: types.ON_PLAY,
@@ -12,11 +26,6 @@ export const onPlay = () => ({
 
 export const onPause = () => ({
     type: types.ON_PAUSE,
-});
-
-export const onTimepointChange = (timepoint) => ({
-    type: types.ON_TIMEPOINT_CHANGE,
-    timepoint,
 });
 
 export function onTimeUpdate(currentTime) {

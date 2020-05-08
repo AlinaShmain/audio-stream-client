@@ -60,6 +60,10 @@
     height: 40px;
 }
 
+.controllers .play-icon, .controllers .pause-icon, .controllers .back-icon, .controllers .forward-icon, .volume-controllers, .soundline, .soundline .timepoint {
+    cursor: pointer;
+}
+
 .timeline .controllers .back-icon:after {
     content: '\f04a';
     font-family: 'Font Awesome\ 5 Free';

@@ -1,0 +1,26 @@
+.tracks-tbl {
+
+}
+
+.tracks-tbl .table-header {
+    color: #6F716D;
+}
+
+.tracks-tbl .table-body:nth-child(odd) {
+    background-color: #424441;
+}
+
+.tracks-tbl .table-body .table-row {
+    height: 50px;
+    color: #ffffff;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.tracks-tbl .table-body .table-row:hover {
+    cursor: pointer;
+}
+
+.tracks-tbl .table-body .table-row:nth-child(1) {
+    padding-top: 10px;
+}

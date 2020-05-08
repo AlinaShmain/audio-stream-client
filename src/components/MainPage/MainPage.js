@@ -1,42 +1,57 @@
 import React, {useEffect, useState, useRef} from 'react';
+import {useDispatch} from "react-redux";
 import {Route, Switch, NavLink, Link} from 'react-router-dom';
 
 import {HomePage, SongPage} from "../index";
 import AudioPlayer from '../AudioPlayer/AudioPlayer';
+import {changeSearchY, changeMenuWidth} from '../../actions/main';
 
 import './MainPage.css';
 
 
-const Menu = ({open}) => {
-    const [height, setHeight] = useState(0);
-    const [width, setWidth] = useState(0);
+const Menu = ({props, open}) => {
 
     const searchRef = useRef();
     const menuRef = useRef();
+    const openMenuRef = useRef();
+    const closedMenuRef = useRef();
+
+    const dispatch = useDispatch();
 
     useEffect(() => {
         if (searchRef.current) {
-            console.log(searchRef.current.offsetHeight);
-            setHeight(`${searchRef.current.style.marginTop} + ${searchRef.current.getBoundingClientRect().height}px`);
+            // console.log(searchRef.current.offsetHeight);
+
+            const y = `${searchRef.current.style.marginTop} + ${searchRef.current.getBoundingClientRect().height}px`;
+            console.log('y', y);
+
+            // setHeight(`${searchRef.current.style.marginTop} + ${searchRef.current.getBoundingClientRect().height}px`);
+            dispatch(changeSearchY(y));
         }
-        console.log(menuRef);
-        if (menuRef.current) {
-            console.log(menuRef.current.offsetWidth);
-            setWidth(menuRef.current.offsetWidth);
+        // console.log(menuRef);
+        if(open && openMenuRef.current) {
+                console.log('ldld', openMenuRef.current.offsetWidth);
+                dispatch(changeMenuWidth(openMenuRef.current.offsetWidth));
+        } else if(closedMenuRef) {
+            console.log(closedMenuRef.current.offsetWidth);
+                dispatch(changeMenuWidth(closedMenuRef.current.offsetWidth));
         }
-    }, [searchRef, menuRef, open]);
+        // if (menuRef.current) {
+        //     console.log(menuRef.current.offsetWidth);
+        //     // setWidth(menuRef.current.offsetWidth);
+        //
+        //     dispatch(changeMenuWidth(menuRef.current.offsetWidth));
+        // }
+    }, [searchRef, openMenuRef, closedMenuRef, open]);
 
     return (
         <React.Fragment>
-            <nav
-                // style={{transform: open ? 'translateX(0)' : 'translateX(-50%)'}}
-                // style={{transform: open ? 'width(5%)' : 'width(20%)'}}
-                ref={menuRef}
-                className={open ? 'opened-menu' : 'closed-menu'}
-            >
                 {open
                     ?
-                    <React.Fragment>
+                    <nav
+                        ref={openMenuRef}
+                        className='opened-menu'
+                    >
                         <NavLink to='/home' activeClassName='active-link'>
                             <span>Home</span>
                         </NavLink>
@@ -46,9 +61,12 @@ const Menu = ({open}) => {
                         <NavLink to='#' activeClassName='active-link'>
                             <span>Playlists</span>
                         </NavLink>
-                    </React.Fragment>
+                    </nav>
                     :
-                    <React.Fragment>
+                    <nav
+                        ref={closedMenuRef}
+                        className='closed-menu'
+                    >
                         <a href='/home'>
                             <div className="home-icon"><span>Home</span></div>
                         </a>
@@ -58,9 +76,8 @@ const Menu = ({open}) => {
                         <a href='#'>
                             <div className="playlist-icon"><span>Playlists</span></div>
                         </a>
-                    </React.Fragment>
+                    </nav>
                 }
-            </nav>
 
             <div
                 ref={searchRef}
@@ -83,17 +100,51 @@ const Menu = ({open}) => {
                 </div>
             </div>
 
-            <Switch>
-                <Route exact path='/home' component={(props) =>
-                    <HomePage {...props} heightSearch={height} widthMenu={width}/>
-                }/>
-                <Route path='/songs' component={SongPage}/>
-            </Switch>
+            {props.children}
+            {/*<Switch>*/}
+            {/*    <Route exact path='/home' component={(props) =>*/}
+            {/*        <HomePage {...props} heightSearch={height} widthMenu={width}/>*/}
+            {/*    }/>*/}
+            {/*    <Route path='/songs' component={SongPage}/>*/}
+            {/*</Switch>*/}
 
-            <AudioPlayer/>
         </React.Fragment>
     )
 };
+
+{/*<nav*/}
+{/*    // style={{transform: open ? 'translateX(0)' : 'translateX(-50%)'}}*/}
+{/*    // style={{transform: open ? 'width(5%)' : 'width(20%)'}}*/}
+{/*    ref={menuRef}*/}
+{/*    className={open ? 'opened-menu' : 'closed-menu'}*/}
+{/*>*/}
+{/*    {open*/}
+{/*        ?*/}
+{/*        <React.Fragment>*/}
+{/*            <NavLink to='/home' activeClassName='active-link'>*/}
+{/*                <span>Home</span>*/}
+{/*            </NavLink>*/}
+{/*            <NavLink to='/songs' activeClassName='active-link'>*/}
+{/*                <span>Songs</span>*/}
+{/*            </NavLink>*/}
+{/*            <NavLink to='#' activeClassName='active-link'>*/}
+{/*                <span>Playlists</span>*/}
+{/*            </NavLink>*/}
+{/*        </React.Fragment>*/}
+{/*        :*/}
+{/*        <React.Fragment>*/}
+{/*            <a href='/home'>*/}
+{/*                <div className="home-icon"><span>Home</span></div>*/}
+{/*            </a>*/}
+{/*            <a href='/songs'>*/}
+{/*                <div className="song-icon"><span>Songs</span></div>*/}
+{/*            </a>*/}
+{/*            <a href='#'>*/}
+{/*                <div className="playlist-icon"><span>Playlists</span></div>*/}
+{/*            </a>*/}
+{/*        </React.Fragment>*/}
+{/*    }*/}
+{/*</nav>*/}
 
 const Burger = ({open, setOpen}) => {
     return (
@@ -143,17 +194,19 @@ const styles = {
     }
 };
 
-const MainPage = () => {
+const MainPage = (props) => {
     const [open, setOpen] = React.useState(false);
 
     useEffect(() => {
         console.log('mainpage ' + open);
+        // console.log('location', props);
     }, []);
 
     return (
         <div className='main-page h-100'>
             <Burger open={open} setOpen={setOpen}/>
-            <Menu open={open} setOpen={setOpen}/>
+            <Menu props={props} open={open} setOpen={setOpen}/>
+            <AudioPlayer/>
         </div>
     );
 };

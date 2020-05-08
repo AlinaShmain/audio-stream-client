@@ -1,12 +1,11 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import {useDispatch, useSelector} from "react-redux";
-
 import ss from 'socket.io-stream';
 import socketClient from 'socket.io-client';
 
-import {onPlay, onPause, onTimepointChange, onTimeUpdate, onVolumeChange, playSong} from '../../actions/player';
+import {onPlay, onPause, onTitleUpdate, onArtistUpdate} from '../../actions/player';
 
-const socket = socketClient('http://localhost:5000');
+// const socket = socketClient('http://localhost:5000');
 
 const getAudioContext = () => {
     AudioContext = window.AudioContext;
@@ -16,17 +15,17 @@ const getAudioContext = () => {
 };
 
 const audio = (WrappedComponent) => {
-    const AudioComponent = () => {
+    const AudioComponent = ({...props}) => {
+        const [sources, setSources] = useState([]);
         const dispatch = useDispatch();
-        const playerData = useSelector(state => state.player);
-        // const {currentTime, duration, isPlaying, muted, repeat, shuffle} = playerData;
+        const {socket} = useSelector(state => state.player);
 
         const {audioContext} = getAudioContext();
 
-        // const [player, setPlayer] = useState(null);
-        let sources = [];
-        // let isPlaying = false;
+        // let sources = [];
+        let isPlaying = true;
         let startTime = 0;
+        let stopTime = 0;
         // let lastChunkOffset = 0;
         let audioBuffer = null;
         // const bufferSize = 6;
@@ -51,6 +50,13 @@ const audio = (WrappedComponent) => {
             return tmp;
         };
 
+        // useEffect(() => {
+        //     if (sources.length) {
+        //         console.log('update sources', sources);
+        //         Object.assign(sourcesArray, [...sources]);
+        //     }
+        // },[sources]);
+
         const playWhileLoading = setInterval(() => {
             console.log('chunks length', chunks.length);
             if (chunks.length !== 0) {
@@ -68,7 +74,16 @@ const audio = (WrappedComponent) => {
 
                         source.connect(audioContext.destination);
 
-                        sources.push(source);
+                        // sources.push(source);
+
+                        // setTimeout(() => {
+                        //     setSources(sources => {
+                        //         console.log(sources);
+                        //         return [...sources, source]
+                        //     });
+                        //     console.log('SOURCES', sources);
+                        // }, 0);
+                        setSources(sources => [...sources, source]);
 
                         if(!activeSource) {
                             activeSource = sources.shift();
@@ -79,15 +94,32 @@ const audio = (WrappedComponent) => {
                         };
 
                         console.log('audioBuffer', audioBufferChunk);
-                        source.start(startTime + nextTime, audioBuffer.duration - audioBufferChunk.duration, audioBufferChunk.duration);
-                        // source.start(startTime + nextTime);
+
+                        if(isPlaying) {
+                            source.start(startTime + nextTime, audioBuffer.duration - audioBufferChunk.duration, audioBufferChunk.duration);
+                        }
                         nextTime += audioBufferChunk.duration;
                     });
             }
         }, 500);
 
+        const stopPlaying = () => {
+            if(sources.length) {
+                console.log('Stop Playing');
+
+                isPlaying = false;
+
+                stopTime = audioContext.currentTime - startTime;
+
+                sources.forEach((source) => source.stop(0));
+            }
+        };
+
         const playByTimepoint = (timepoint) => {
-                // const share = chunkSize / fileSize;
+
+            stopPlaying();
+
+            // const share = chunkSize / fileSize;
                 // console.log(share);
                 //
                 // const durationOfChunk = share * fileDuration;
@@ -126,21 +158,18 @@ const audio = (WrappedComponent) => {
             // // //     // });
         };
 
-        const onPlayBtnClick = () => {
-            // useCallback(() => {
+        const onTrackBtnClick = (e) => {
+            const trackHTML = e.target.parentElement;
+
+            const id = trackHTML.getAttribute('data-id');
+            const title = trackHTML.cells[0].innerText;
+            const artist = trackHTML.cells[1].innerHTML;
+
+            dispatch(onTitleUpdate(title));
+            dispatch(onArtistUpdate(artist));
             dispatch(onPlay());
 
-            console.log(`Playing ${playerData.isPlaying}`);
-
-            socket.emit('track', (e) => {
-                // socket.on('metadata', ({fileSize, chunkSize}) => {
-                //     this.fileSize = fileSize;
-                //     // this.fileDuration = fileDuration;
-                //     this.chunkSize = chunkSize;
-                // });
-                //
-                // playByTimepoint(0);
-            });
+            socket.emit('track', (e) => {});
 
             socket.on('metadata', ({fileSize, chunkSize}) => {
                 console.log('metadata');
@@ -165,32 +194,54 @@ const audio = (WrappedComponent) => {
             });
 
             socket.on('end', () => {
-
                 // clearInterval(playWhileLoading);
             });
         };
 
-        const onStopBtnClick = () => {
-            // activeSource && activeSource.stop(0);
-            sources.forEach((source) => source.stop(0));
+        const onPlayBtnClick = () => {
+            //// useCallback(() => {
+            if(sources && sources.length > 0) {
+                isPlaying = true;
+                dispatch(onPlay());
 
-            console.log('Stop playing');
-
-            dispatch(onPause());
-
-            console.log(`Playing ${playerData.isPlaying}`);
+                // console.log(`Playing ${playerData.isPlaying}`);
+                const source = sources.splice(0, sources.length - 1).pop();
+                // const source = sources.pop();
+                // sources.splice(0, sources.length - 1);
+                source.start(0, stopTime, source.buffer.duration - stopTime);
+            }
         };
 
-        const onTimepointChange = () => {
-            console.log('Timepoint change');
+        const onStopBtnClick = (e) => {
+            console.log(sources);
+
+            setSources((sources) => {
+                console.log('sources', sources);
+            });
+
+            console.log('chunks', chunks);
+
+            if(sources && sources.length > 0) {
+                console.log('On Stop Click');
+
+                dispatch(onPause());
+
+                stopPlaying();
+            }
+
+            // // socket.emit('stop', () => {});
+            //
+            // // activeSource && activeSource.stop(0);
+            // sources.forEach((source) => source && source.stop(0));
         };
 
         return (
             <WrappedComponent
-                player={playerData}
                 onPlayBtnClick={onPlayBtnClick}
                 onStopBtnClick={onStopBtnClick}
-                onTimepointChange={{onTimepointChange}}
+                onTimepointChange={playByTimepoint}
+                onTrackBtnClick={onTrackBtnClick}
+                {...props}
             />
         );
     };
