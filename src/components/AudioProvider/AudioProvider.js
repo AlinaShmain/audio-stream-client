@@ -293,25 +293,37 @@ const AudioProvider = ({children}) => {
 
         nextTimeRef.current = 0;
 
+        let buffer = null;
+
+        socket.on('end', function () {
+            console.log(`audio received ${buffer}`);
+
+            audioContext.decodeAudioData(buffer).then(b => {
+                let source = audioContext.createBufferSource();
+                source.buffer = b;
+                source.connect(audioContext.destination);
+                source.start();
+            });
+        });
+
         socket.on('audio', (chunk_) => {
             console.log('receivedChunk', chunk_);
             // debugger;
 
             // chunks.push(chunk_);
-            chunksRef.current.push(chunk_);
-
-            audioCtxRef.current.decodeAudioData(chunk_)
-                        .then((audioBufferChunk) => {
-                            audioBufferRef.current = audioBufferRef.current
-                                ? appendBuffer(audioBufferRef.current, audioBufferChunk)
-                                : audioBufferChunk;
-                        });
+            // chunksRef.current.push(chunk_);
+            buffer = buffer ? concat(buffer, chunk_) : chunk_;
         });
 
         socket.on('end', () => {
             // clearInterval(playWhileLoading);
 
-            let source = audioCtxRef.current.createBufferSource();
+            audioBufferRef.current.decodeAudioData(buffer).then(b => {
+                let source = audioCtxRef.current.createBufferSource();
+                source.buffer = b;
+                source.connect(audioCtxRef.current.destination);
+                source.start();
+            });
             // source.buffer = chunksRef.current.reduce((chunk1, chunk2) => appendBuffer(chunk1, chunk2));
             // source.buffer = await new Promise((resolve, reject) => {
             //     while (chunksRef.current.length !== 0) {
@@ -330,11 +342,6 @@ const AudioProvider = ({children}) => {
             //         }
             //     }
             // });
-
-            console.log('start playing');
-            source.buffer = audioBufferRef.current;
-            source.connect(audioCtxRef.current.destination);
-            source.start();
         });
     };
 
