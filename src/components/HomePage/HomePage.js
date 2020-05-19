@@ -1,15 +1,18 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import {useSelector} from "react-redux";
 
 import audio from '../AudioPlayer/audio';
 import TrackList from '../TrackList/TrackList';
 import './HomePage.css';
+import {AudioCtx} from "../AudioProvider/AudioProvider";
 
-const HomePage = ({onTrackBtnClick, location}) => {
+const HomePage = ({location}) => {
 
     const {offset_y_search, width_menu} = useSelector(state => state.ui);
     const {socket} = useSelector(state => state.player);
     const [tracks, setTracks] = useState([]);
+
+    const {onTrackBtnClick} = useContext(AudioCtx);
 
     // const handler = useCallback(() => {
     //     console.log('handler');
@@ -45,4 +48,4 @@ const HomePage = ({onTrackBtnClick, location}) => {
     );
 };
 
-export default audio(HomePage);
+export default HomePage;

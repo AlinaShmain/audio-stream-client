@@ -1,13 +1,7 @@
 import * as types from '../constants/action_constants';
 
-export const setSocket = (socket) => ({
-   type: types.SET_SOCKET,
-   socket
-});
-
-export const onChunkSizeUpdate = (chunkSize) => ({
-   type: types.ON_CHUNK_SIZE_UPDATE,
-   chunkSize
+export const onStart = () => ({
+    type: types.ON_START
 });
 
 export const onTitleUpdate = (title) => ({
@@ -21,24 +15,39 @@ export const onArtistUpdate = (artist) => ({
 });
 
 export const onPlay = () => ({
-    type: types.ON_PLAY,
+    type: types.ON_PLAY
 });
 
 export const onPause = () => ({
-    type: types.ON_PAUSE,
+    type: types.ON_PAUSE
 });
 
-export function onTimeUpdate(currentTime) {
-    return () => ({
-        type: types.ON_TIME_UPDATE,
-        currentTime,
-    });
-}
+export const onLoad = (loadingProcess) => ({
+    type: types.ON_LOAD,
+    loadingProcess
+});
 
-export const onVolumeChange = (muted, volume) => ({
+export const onTimeUpdate = (currentTime) => ({
+    type: types.ON_TIME_UPDATE,
+    currentTime
+});
+
+export const onDurationUpdate = (duration) => ({
+    type: types.ON_DURATION_UPDATE,
+    duration
+});
+
+export const onMute = () => ({
+    type: types.ON_MUTE
+});
+
+export const onUnmute = () => ({
+    type: types.ON_UNMUTE
+});
+
+export const onVolumeChange = (volume) => ({
     type: types.ON_VOLUME_CHANGE,
-    muted,
-    volume,
+    volume
 });
 
 export const playSong = (playlist, playingIndex) => ({

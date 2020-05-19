@@ -206,7 +206,7 @@ const MainPage = (props) => {
         <div className='main-page h-100'>
             <Burger open={open} setOpen={setOpen}/>
             <Menu props={props} open={open} setOpen={setOpen}/>
-            <AudioPlayer/>
+            <AudioPlayer props={props}/>
         </div>
     );
 };

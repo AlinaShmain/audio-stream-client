@@ -1,4 +1,4 @@
-import React, {useState, useRef, useEffect, useCallback} from 'react';
+import React, {useContext} from 'react';
 import {useDispatch, useSelector} from "react-redux";
 import {
     faStepBackward,
@@ -8,125 +8,59 @@ import {
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
 import audio from './audio';
+import Draggable from './Draggable';
 import './AudioPlayer.css';
+import {AudioCtx} from "../AudioProvider/AudioProvider";
 
-const AudioPlayer = ({onPlayBtnClick, onStopBtnClick, onTimepointChange}) => {
-    // const [relX, setRelX] = useState(0);
-    let relX = 0;
-    const [x, setX] = useState(0);
+const AudioPlayer = ({...props}) => {
 
-    const {isPlaying, title, artist, currentTime, duration} = useSelector(state => state.player);
+    const {onPlayBtnClick, onStopBtnClick, onTimepointChange, onMuteClick, onUnmuteClick, onVolumeChange} = useContext(AudioCtx);
 
-    const dispatch = useDispatch();
-
-    const timelineRef = useRef();
-    const timepointRef = useRef();
-
-    const onStart = (e) => {
-        const body = document.body;
-        const box = timepointRef.current.getBoundingClientRect();
-        console.log('clientX', e.clientX);
-        console.log('timepoint left', box.left);
-        // console.log('e.pageX', e.pageX);
-        console.log('body.scrollLeft', body.scrollLeft);
-        console.log('body.clientLeft', body.clientLeft);
-        // console.log('relX', e.pageX - (box.left + body.scrollLeft - body.clientLeft));
-        // console.log('timeline width', timelineRef.current.getBoundingClientRect().width);
-        relX = e.clientX - box.left;
-        // setRelX(
-        //     e.clientX - box.left
-        //     // e.pageX - (box.left + body.scrollLeft - body.clientLeft),
-        // );
-    };
-
-    const onMouseDown = (e) => {
-        if (e.button !== 0) return;
-        onStart(e);
-        document.addEventListener('mousemove', onMouseMove);
-        document.addEventListener('mouseup', onMouseUp);
-        e.preventDefault();
-    };
-
-    const onMouseUp = (e) => {
-        document.removeEventListener('mousemove', onMouseMove);
-        document.removeEventListener('mouseup', onMouseUp);
-        // this.props.onStop && this.props.onStop(this.state.x, this.state.y);
-        const timelineWidth = timelineRef.current.getBoundingClientRect().width;
-        // const timepoint = (100 / e.clientX) * timelineWidth;
-        const timepoint = Math.floor((e.clientX * 100) / timelineWidth);
-        console.log('timepoint', timepoint);
-
-        onTimepointChange(timepoint);
-
-        e.preventDefault();
-    };
-
-    const onMouseMove = (e) => {
-        onMove(e);
-        e.preventDefault();
-    };
-
-    const onMove = (e) => {
-        const offsetX = e.clientX - relX;
-        const timepointWidth = timepointRef.current.getBoundingClientRect().width;
-        const timelineWidth = timelineRef.current.getBoundingClientRect().width;
-
-        if (x !== offsetX && relX !== offsetX && offsetX >= 0 && (offsetX + timepointWidth) <= timelineWidth) {
-            console.log('offset', offsetX);
-            setX(offsetX);
-        }
-    };
+    const {isStarted, isPlaying, title, artist, loadingProcess, currentTime, duration, isMuted, volume} = useSelector(state => state.player);
 
     return (
         <React.Fragment>
             <div className="timeline fixed-bottom justify-content-center w-100">
-                <div className="soundline" ref={timelineRef}>
-                    <div className='timepoint'
-                         ref={timepointRef}
-                         style={{left: x}}
-                         onMouseDown={onMouseDown}
-                    ></div>
-                </div>
+                {isStarted
+                    ?
+                    <Draggable props={props} line='soundline' point='timepoint' playingProgress={loadingProcess}
+                               afterUp={(timepoint) => onTimepointChange(timepoint)}/>
+                    :
+                    <div className='soundline' style={{backgroundColor: '#6F716D'}}/>
+                }
                 <div className='d-flex justify-content-between pr-3 pl-3 w-100'>
                     <div className='d-flex flex-column justify-content-center w-30'>
                         <span className='title'>{title}</span>
                         <span className='artist'>{artist}</span>
                     </div>
                     <div className='controllers w-40'>
-                        <div className='time'><span className='d-inline-block'>{currentTime}</span></div>
-                        <div className='back-icon' onClick={onStopBtnClick}>
-                            {/*    /!*<FontAwesomeIcon icon={faStepBackward}*!/*/}
-                            {/*    /!*                 style={{*!/*/}
-                            {/*    /!*                     height: '15px',*!/*/}
-                            {/*    /!*                     width: '15px',*!/*/}
-                            {/*    /!*                     color: '#6F716D'*!/*/}
-                            {/*    /!*                 }}/>*!/*/}
-                        </div>
-                        <div className={isPlaying ? 'pause-icon' : 'play-icon'}
-                             onClick={isPlaying ? onStopBtnClick : onPlayBtnClick}
-                        >
-                            {/*    /!*<FontAwesomeIcon icon={faPlayCircle}*!/*/}
-                            {/*    /!*                 style={{*!/*/}
-                            {/*    /!*                     height: '30px',*!/*/}
-                            {/*    /!*                     width: '30px',*!/*/}
-                            {/*    /!*                     color: '#70FF00'*!/*/}
-                            {/*    /!*                 }}/>*!/*/}
-                        </div>
-                        <div className='forward-icon' onClick={() => {
-                        }}>
-                            {/*    /!*<FontAwesomeIcon icon={faStepForward}*!/*/}
-                            {/*    /!*                 style={{*!/*/}
-                            {/*    /!*                     height: '15px',*!/*/}
-                            {/*    /!*                     width: '15px',*!/*/}
-                            {/*    /!*                     color: '#6F716D'*!/*/}
-                            {/*    /!*                 }}/>*!/*/}
-                        </div>
-                        <div className='time'><span className='d-inline-block'>{duration}</span></div>
+                        {isStarted ?
+                            <React.Fragment>
+                                <div className='time'><span
+                                className='d-inline-block'>{currentTime.min}:{currentTime.sec}</span></div>
+                                <div className='back-icon' onClick={onStopBtnClick}/>
+                                <div style={{color: '#70FF00', cursor: 'pointer'}}
+                                     className={isPlaying ? 'pause-icon' : 'play-icon'}
+                                     onClick={isPlaying ? onStopBtnClick : onPlayBtnClick}
+                                />
+                                <div className='forward-icon' onClick={() => {}}/>
+                                <div className='time'><span className='d-inline-block'>
+                                        {duration.min}:{duration.sec}
+                                </span></div>
+                            </React.Fragment>
+                            :
+                            <React.Fragment>
+                                <div className='back-icon'/>
+                                <div className='play-icon' style={{color: '#6F716D'}}/>
+                                <div className='forward-icon' onClick={() => {}}/>
+                            </React.Fragment>
+                        }
                     </div>
                     <div className='volume-controllers w-30'>
-                        <div className='volume-down-icon'></div>
-                        <div className='volume-line'></div>
-                        <div className='volume-up-icon'></div>
+                        <div className={isMuted ? 'volume-down-icon' : 'volume-up-icon'}
+                             onClick={isMuted ? onUnmuteClick : onMuteClick}></div>
+                        <Draggable props={props} line='volume-line' point='volume-point' playingProgress={volume}
+                                   initOffset={volume} afterMove={(volume) => onVolumeChange(volume)}/>
                     </div>
                 </div>
             </div>
@@ -134,4 +68,4 @@ const AudioPlayer = ({onPlayBtnClick, onStopBtnClick, onTimepointChange}) => {
     );
 };
 
-export default audio(AudioPlayer);
+export default AudioPlayer;

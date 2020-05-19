@@ -5,17 +5,26 @@ const ENDPOINT = 'http://localhost:5000';
 
 const initialState = {
     socket: socketClient(ENDPOINT),
-    currentTime: 0,
-    duration: 0,
+    isStarted: false,
+    currentTime: {
+        min: '00',
+        sec: '00'
+    },
+    duration: {
+        min: '00',
+        sec: '00'
+    },
+    loadingProcess: 0,
     chunkSize: 0,
     title: '',
     artist: '',
     isPlaying: false,
-    muted: false,
+    isMuted: false,
     repeat: false,
     shuffle: false,
     timepoint: 0,
-    volume: 1,
+    volume: 60,
+    resumeVolume: 0,
     playingIndex: null,
     playlist: null,
 };
@@ -27,6 +36,11 @@ export default function player(state = initialState, action) {
                 ...state,
                 socket: action.socket
             };
+        case types.ON_START:
+            return {
+                ...state,
+                isStarted: true
+            };
         case types.ON_PAUSE:
             return {
                 ...state,
@@ -36,6 +50,11 @@ export default function player(state = initialState, action) {
             return {
                 ...state,
                 isPlaying: true,
+            };
+        case types.ON_LOAD:
+            return {
+              ...state,
+              loadingProcess: action.loadingProcess
             };
         case types.PLAY_SONG:
             return {
@@ -53,6 +72,11 @@ export default function player(state = initialState, action) {
                 ...state,
                 currentTime: action.currentTime,
             };
+        case types.ON_DURATION_UPDATE:
+            return {
+                ...state,
+                duration: action.duration
+            };
         case types.ON_TITLE_UPDATE:
             return {
                 ...state,
@@ -63,11 +87,23 @@ export default function player(state = initialState, action) {
                 ...state,
                 artist: action.artist
             };
-        case types.ON_VOLUME_CHANGE:
+        case types.ON_MUTE:
             return {
                 ...state,
-                muted: action.muted,
-                volume: action.volume,
+                isMuted: true,
+                resumeVolume: state.volume,
+                volume: 0
+            };
+        case types.ON_UNMUTE:
+            return {
+                ...state,
+                isMuted: false,
+                volume: state.resumeVolume
+            };
+        case types.ON_VOLUME_CHANGE:
+            return {
+              ...state,
+              volume: action.volume
             };
         default:
             return state;

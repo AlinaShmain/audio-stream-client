@@ -8,9 +8,13 @@ import AppRouter from "./routers/routes";
 import './fonts/CyberspaceRacewayFront-lWGD.ttf';
 import './index.css';
 // import './fonts/fonts.css';
+import AudioProvider from './components/AudioProvider/AudioProvider';
+
 
 render(
     <Provider store={store}>
-        <AppRouter/>
+        <AudioProvider>
+            <AppRouter/>
+        </AudioProvider>
     </Provider>
     , document.querySelector('#root'));

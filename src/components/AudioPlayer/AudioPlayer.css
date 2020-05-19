@@ -14,7 +14,7 @@
     /*overflow: hidden;*/
 }
 
-.timepoint {
+.timepoint, .volume-point {
     position: absolute;
     top: 50%;
     transform: translate(0, -50%);
@@ -60,7 +60,7 @@
     height: 40px;
 }
 
-.controllers .play-icon, .controllers .pause-icon, .controllers .back-icon, .controllers .forward-icon, .volume-controllers, .soundline, .soundline .timepoint {
+.controllers .pause-icon, .volume-controllers, .soundline .timepoint {
     cursor: pointer;
 }
 
@@ -75,7 +75,7 @@
     content: '\f144';
     font-family: 'Font Awesome\ 5 Free';
     font-size: 35px;
-    color: #70FF00;
+    /*color: #70FF00;*/
     font-weight: 600;
     /*margin-left: 5px;*/
 }
