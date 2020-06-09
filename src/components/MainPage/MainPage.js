@@ -1,99 +1,192 @@
 import React, {useEffect, useState, useRef} from 'react';
+import {useDispatch, useSelector} from "react-redux";
 import {Route, Switch, NavLink, Link} from 'react-router-dom';
 
 import {HomePage, SongPage} from "../index";
 import AudioPlayer from '../AudioPlayer/AudioPlayer';
+import {changeSearchY, changeMenuWidth} from '../../actions/main';
+import {onUpdateInfo} from '../../actions/auth';
 
 import './MainPage.css';
+import SearchInput from "../SearchInput/SearchInput";
 
 
-const Menu = ({open}) => {
-    const [height, setHeight] = useState(0);
-    const [width, setWidth] = useState(0);
+const Menu = ({props, open}) => {
+    // const searchRef = useRef();
+    // const menuRef = useRef();
+    const openMenuRef = useRef();
+    const closedMenuRef = useRef();
+    // const {user} = useSelector((state) => state.auth);
 
-    const searchRef = useRef();
-    const menuRef = useRef();
+    const dispatch = useDispatch();
+
+    // useEffect(() => {
+    //     const username = localStorage.getItem("username");
+    //     if(username) {
+    //         dispatch(onUpdateInfo({username}));
+    //     } else localStorage.setItem("username", user.username);
+    // }, []);
 
     useEffect(() => {
-        if (searchRef.current) {
-            console.log(searchRef.current.offsetHeight);
-            setHeight(`${searchRef.current.style.marginTop} + ${searchRef.current.getBoundingClientRect().height}px`);
+        // if (searchRef.current) {
+        //     // console.log(searchRef.current.offsetHeight);
+        //
+        //     const y = `${searchRef.current.style.marginTop} + ${searchRef.current.getBoundingClientRect().height}px`;
+        //     console.log('y', y);
+        //
+        //     // setHeight(`${searchRef.current.style.marginTop} + ${searchRef.current.getBoundingClientRect().height}px`);
+        //     dispatch(changeSearchY(y));
+        // }
+        // console.log(menuRef);
+        if (open && openMenuRef.current) {
+            console.log('ldld', openMenuRef.current.offsetWidth);
+            dispatch(changeMenuWidth(openMenuRef.current.offsetWidth));
+        } else if (closedMenuRef) {
+            console.log(closedMenuRef.current.offsetWidth);
+            dispatch(changeMenuWidth(closedMenuRef.current.offsetWidth));
         }
-        console.log(menuRef);
-        if (menuRef.current) {
-            console.log(menuRef.current.offsetWidth);
-            setWidth(menuRef.current.offsetWidth);
-        }
-    }, [searchRef, menuRef, open]);
+        // if (menuRef.current) {
+        //     console.log(menuRef.current.offsetWidth);
+        //     // setWidth(menuRef.current.offsetWidth);
+        //
+        //     dispatch(changeMenuWidth(menuRef.current.offsetWidth));
+        // }
+    }, [openMenuRef, closedMenuRef, open]);
 
     return (
         <React.Fragment>
-            <nav
-                // style={{transform: open ? 'translateX(0)' : 'translateX(-50%)'}}
-                // style={{transform: open ? 'width(5%)' : 'width(20%)'}}
-                ref={menuRef}
-                className={open ? 'opened-menu' : 'closed-menu'}
-            >
-                {open
-                    ?
-                    <React.Fragment>
-                        <NavLink to='/home' activeClassName='active-link'>
-                            <span>Home</span>
-                        </NavLink>
-                        <NavLink to='/songs' activeClassName='active-link'>
-                            <span>Songs</span>
-                        </NavLink>
-                        <NavLink to='#' activeClassName='active-link'>
-                            <span>Playlists</span>
-                        </NavLink>
-                    </React.Fragment>
-                    :
-                    <React.Fragment>
-                        <a href='/home'>
-                            <div className="home-icon"><span>Home</span></div>
-                        </a>
-                        <a href='/songs'>
-                            <div className="song-icon"><span>Songs</span></div>
-                        </a>
-                        <a href='#'>
-                            <div className="playlist-icon"><span>Playlists</span></div>
-                        </a>
-                    </React.Fragment>
-                }
-            </nav>
+            {open
+                ?
+                <nav
+                    ref={openMenuRef}
+                    className='opened-menu'
+                >
+                    <NavLink to='/home' activeClassName='active-link'>
+                        <span>Home</span>
+                    </NavLink>
+                    <NavLink to='/songs' activeClassName='active-link'>
+                        <span>Songs</span>
+                    </NavLink>
+                    <NavLink to='#' activeClassName='active-link'>
+                        <span>Playlists</span>
+                    </NavLink>
+                </nav>
+                :
+                <nav
+                    ref={closedMenuRef}
+                    className='closed-menu'
+                >
+                    <a href='/home'>
+                        <div className="home-icon"><span>Home</span></div>
+                    </a>
+                    <a href='/songs'>
+                        <div className="song-icon"><span>Songs</span></div>
+                    </a>
+                    <a href='#'>
+                        <div className="playlist-icon"><span>Playlists</span></div>
+                    </a>
+                </nav>
+            }
 
-            <div
-                ref={searchRef}
-                style={{
-                    marginLeft: open ? '25%' : '9%', transition: 'margin-left 0.3s ease-in-out',
-                    marginTop: '2%'
-                }}
-                className='d-flex fixed-top search'>
-                <div className='input-group w-50'>
-                    <input
-                        className="form-control"
-                        type="text"
-                        placeholder='Search for song, artist, album'
-                        onChange={() => {
-                        }}
-                    />
-                    <span className="input-group-append">
-                        <i className="fa fa-search"></i>
-                    </span>
-                </div>
-            </div>
+            <SearchInput open={open} />
 
-            <Switch>
-                <Route exact path='/home' component={(props) =>
-                    <HomePage {...props} heightSearch={height} widthMenu={width}/>
-                }/>
-                <Route path='/songs' component={SongPage}/>
-            </Switch>
+            {/*<div*/}
+            {/*    ref={searchRef}*/}
+            {/*    style={{*/}
+            {/*        marginLeft: open ? '25%' : '9%', transition: 'margin-left 0.3s ease-in-out',*/}
+            {/*        marginTop: '2%'*/}
+            {/*    }}*/}
+            {/*    className='d-flex fixed-top search'>*/}
+            {/*    <div className='input-group w-50'>*/}
+            {/*        <input*/}
+            {/*            className="form-control"*/}
+            {/*            type="text"*/}
+            {/*            placeholder='Search for song, artist, album'*/}
+            {/*            onChange={() => {*/}
+            {/*            }}*/}
+            {/*        />*/}
+            {/*        <span className="input-group-append">*/}
+            {/*            <i className="fa fa-search"></i>*/}
+            {/*        </span>*/}
+            {/*    </div>*/}
+            {/*    <div className='w-50 text-right pr-4'>*/}
+            {/*        <span className='user-name pr-3 align-text-top'>{user && user.username}</span>*/}
+            {/*        <div className='log-out-icon align-bottom' onClick={() => {}}/>*/}
+            {/*    </div>*/}
+            {/*</div>*/}
 
-            <AudioPlayer/>
+            {props.children}
+
         </React.Fragment>
     )
 };
+
+{/*<nav*/
+}
+{/*    // style={{transform: open ? 'translateX(0)' : 'translateX(-50%)'}}*/
+}
+{/*    // style={{transform: open ? 'width(5%)' : 'width(20%)'}}*/
+}
+{/*    ref={menuRef}*/
+}
+{/*    className={open ? 'opened-menu' : 'closed-menu'}*/
+}
+{/*>*/
+}
+{/*    {open*/
+}
+{/*        ?*/
+}
+{/*        <React.Fragment>*/
+}
+{/*            <NavLink to='/home' activeClassName='active-link'>*/
+}
+{/*                <span>Home</span>*/
+}
+{/*            </NavLink>*/
+}
+{/*            <NavLink to='/songs' activeClassName='active-link'>*/
+}
+{/*                <span>Songs</span>*/
+}
+{/*            </NavLink>*/
+}
+{/*            <NavLink to='#' activeClassName='active-link'>*/
+}
+{/*                <span>Playlists</span>*/
+}
+{/*            </NavLink>*/
+}
+{/*        </React.Fragment>*/
+}
+{/*        :*/
+}
+{/*        <React.Fragment>*/
+}
+{/*            <a href='/home'>*/
+}
+{/*                <div className="home-icon"><span>Home</span></div>*/
+}
+{/*            </a>*/
+}
+{/*            <a href='/songs'>*/
+}
+{/*                <div className="song-icon"><span>Songs</span></div>*/
+}
+{/*            </a>*/
+}
+{/*            <a href='#'>*/
+}
+{/*                <div className="playlist-icon"><span>Playlists</span></div>*/
+}
+{/*            </a>*/
+}
+{/*        </React.Fragment>*/
+}
+{/*    }*/
+}
+{/*</nav>*/
+}
 
 const Burger = ({open, setOpen}) => {
     return (
@@ -143,17 +236,19 @@ const styles = {
     }
 };
 
-const MainPage = () => {
+const MainPage = (props) => {
     const [open, setOpen] = React.useState(false);
 
     useEffect(() => {
         console.log('mainpage ' + open);
+        // console.log('location', props);
     }, []);
 
     return (
         <div className='main-page h-100'>
             <Burger open={open} setOpen={setOpen}/>
-            <Menu open={open} setOpen={setOpen}/>
+            <Menu props={props} open={open} setOpen={setOpen}/>
+            <AudioPlayer props={props}/>
         </div>
     );
 };

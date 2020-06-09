@@ -1,19 +1,20 @@
 import React from 'react';
-import {BrowserRouter as Router, Switch} from "react-router-dom";
+import {BrowserRouter as Router, Switch, Route} from "react-router-dom";
 
-import AuthRoute from './AuthRoute';
-import {Welcome, JoinPage, Main, HomePage, SongPage} from '../components';
+import HomeRoute from './HomeRoute';
+import {Welcome, JoinPage, Main, HomePage, SongPage, SearchPage, AdminPage} from '../components';
 
 const AppRouter = () => (
     <Router>
         <Switch>
-            <AuthRoute exact path='/'/>
+            <HomeRoute exact path='/'/>
             <Welcome path='/join' component={JoinPage}/>
             {/*<Welcome path='/about' component={}/>*/}
             {/*<Welcome path='/help' component={}/>*/}
             <Main path='/home' component={HomePage}/>
             <Main path='/songs' component={SongPage}/>
-            {/*<PrivateRoute path='/home' component={}/>*/}
+            <Main path='/search' component={SearchPage}/>
+            <Route path='/admin' component={AdminPage}/>
             {/*<PrivateRoute path='/{user-id}' component={UserPage}/>*/}
             {/*<PrivateRoute path='/songs' component={}/>*/}
             {/*<PrivateRoute path='/songs/{song-id}' component={}/>*/}

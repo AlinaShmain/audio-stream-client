@@ -3,7 +3,8 @@ import React, {useState} from 'react';
 import './JoinPage.css';
 import AuthModal from "../AuthModal/AuthModal";
 
-const JoinPage = () => {
+const JoinPage = ({...props}) => {
+    console.log('JoinPage');
     const [modalShow, setModalShow] = useState(false);
     const [visibleClass, setVisibleClass] = useState('visible');
 
@@ -35,7 +36,7 @@ const JoinPage = () => {
                 {/*</div>*/}
                 {/*</div>*/}
             </div>
-            <AuthModal show={modalShow} onHide={closeModal}/>
+            <AuthModal show={modalShow} onHide={closeModal} {...props}/>
         </div>
     );
 };

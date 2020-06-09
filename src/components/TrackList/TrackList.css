@@ -1,0 +1,29 @@
+.tracks-tbl {
+
+}
+
+.tracks-tbl .table-header {
+    color: #6F716D;
+}
+
+.tracks-tbl .table-body .table-row:nth-child(even) {
+    /*background: #424441;*/
+    background-color: rgba(66, 68, 65, 0.3);
+    /*opacity: 0.3;*/
+    /*color: #fff;*/
+}
+
+.tracks-tbl .table-body .table-row {
+    height: 50px;
+    color: #ffffff;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.tracks-tbl .table-body .table-row:hover {
+    cursor: pointer;
+}
+
+.tracks-tbl .table-body .table-row:nth-child(1) {
+    padding-top: 10px;
+}

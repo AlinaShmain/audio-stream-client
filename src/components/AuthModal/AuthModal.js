@@ -7,7 +7,7 @@ import SignUpPage from "../SignUpPage/SignUpPage";
 
 import './authModal.css';
 
-const AuthModal = (props) => {
+const AuthModal = ({show, onHide, ...props}) => {
     const [isLoginOpen, setIsLoginOpen] = useState(true);
     const [isRegisterOpen, setIsRegisterOpen] = useState(false);
 
@@ -23,7 +23,7 @@ const AuthModal = (props) => {
 
     return (
         <Modal
-            {...props}
+            show={show} onHide={onHide}
             centered>
             <Modal.Header closeButton>
                 {/*<button type="button" className="close" onClick={props.onHide}>*/}
@@ -49,8 +49,8 @@ const AuthModal = (props) => {
                 </Nav>
             </Modal.Header>
             <Modal.Body className='text-center'>
-                {isLoginOpen && <SignInPage/>}
-                {isRegisterOpen && <SignUpPage/>}
+                {isLoginOpen && <SignInPage {...props}/>}
+                {isRegisterOpen && <SignUpPage {...props}/>}
             </Modal.Body>
             <Modal.Footer>
             </Modal.Footer>

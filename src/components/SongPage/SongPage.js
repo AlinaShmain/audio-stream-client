@@ -3,7 +3,7 @@ import React from 'react';
 const SongPage = () => {
     return (
         <React.Fragment>
-            Song Page
+            {console.log('Song Page')}
         </React.Fragment>
     );
 };

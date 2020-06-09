@@ -9,9 +9,26 @@
     width: 100%;
     height: 3px;
     background-color: #EC00E4;
-    /*position: relative;*/
+    position: relative;
     border-radius: 2px;
     /*overflow: hidden;*/
+}
+
+.timepoint, .volume-point {
+    position: absolute;
+    top: 50%;
+    transform: translate(0, -50%);
+    /*margin-top: 0;*/
+    /*top: 0;*/
+    /*left: 0;*/
+    /*right: 0;*/
+    /*bottom: 0;*/
+    /*margin: auto;*/
+    height: 15px;
+    width: 15px;
+    border-radius: 50%;
+    border: 2px solid black;
+    background-color: #70FF00;
 }
 
 /*.timeline .soundline:after {*/
@@ -43,6 +60,10 @@
     height: 40px;
 }
 
+.controllers .pause-icon, .volume-controllers, .soundline .timepoint {
+    cursor: pointer;
+}
+
 .timeline .controllers .back-icon:after {
     content: '\f04a';
     font-family: 'Font Awesome\ 5 Free';
@@ -54,7 +75,7 @@
     content: '\f144';
     font-family: 'Font Awesome\ 5 Free';
     font-size: 35px;
-    color: #70FF00;
+    /*color: #70FF00;*/
     font-weight: 600;
     /*margin-left: 5px;*/
 }
