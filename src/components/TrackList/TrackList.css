@@ -6,8 +6,11 @@
     color: #6F716D;
 }
 
-.tracks-tbl .table-body:nth-child(odd) {
-    background-color: #424441;
+.tracks-tbl .table-body .table-row:nth-child(even) {
+    /*background: #424441;*/
+    background-color: rgba(66, 68, 65, 0.3);
+    /*opacity: 0.3;*/
+    /*color: #fff;*/
 }
 
 .tracks-tbl .table-body .table-row {

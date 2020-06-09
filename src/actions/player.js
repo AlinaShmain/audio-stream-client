@@ -1,5 +1,10 @@
 import * as types from '../constants/action_constants';
 
+export const setFoundTracks = (tracks) => ({
+    type: types.SET_FOUND_TRACKS,
+    tracks
+});
+
 export const onStart = () => ({
     type: types.ON_START
 });

@@ -1,7 +1,6 @@
 import React, {useState, useEffect, useContext} from 'react';
 import {useSelector} from "react-redux";
 
-import audio from '../AudioPlayer/audio';
 import TrackList from '../TrackList/TrackList';
 import './HomePage.css';
 import {AudioCtx} from "../AudioProvider/AudioProvider";
@@ -9,10 +8,11 @@ import {AudioCtx} from "../AudioProvider/AudioProvider";
 const HomePage = ({location}) => {
 
     const {offset_y_search, width_menu} = useSelector(state => state.ui);
-    const {socket} = useSelector(state => state.player);
+    const {socket} = useContext(AudioCtx);
     const [tracks, setTracks] = useState([]);
 
-    const {onTrackBtnClick} = useContext(AudioCtx);
+    // const {onTrackBtnClick, onStopBtnClick} = useContext(AudioCtx);
+    // const {isStarted, isPlaying} = useSelector(state => state.player);
 
     // const handler = useCallback(() => {
     //     console.log('handler');
@@ -42,7 +42,7 @@ const HomePage = ({location}) => {
               style={{marginTop: `calc(${offset_y_search})`, marginLeft: width_menu}}
               className='d-flex home-page-container w-100'>
 
-              <TrackList tracks={tracks} onTrackBtnClick={onTrackBtnClick}/>
+              <TrackList tracks={tracks}/>
           </div>
       </React.Fragment>
     );

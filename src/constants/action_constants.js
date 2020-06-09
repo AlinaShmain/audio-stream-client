@@ -1,11 +1,15 @@
 export const SIGN_UP_SUCCESS = 'SIGN_UP_SUCCESS';
 export const SIGN_IN_SUCCESS = 'SIGN_IN_SUCCESS';
+export const SIGN_IN_GOOGLE = 'SIGN_IN_GOOGLE';
 export const SIGN_UP_FAILURE = 'SIGN_UP_FAILURE';
 export const SIGN_IN_FAILURE = 'SIGN_IN_FAILURE';
+export const UPDATE_USER_INFO = 'UPDATE_USER_INFO';
 export const LOG_OUT = 'LOG_OUT';
 
 export const CHANGE_SEARCH_Y = 'CHANGE_SEARCH_Y';
 export const CHANGE_MENU_WIDTH = 'CHANGE_MENU_WIDTH';
+
+export const SET_FOUND_TRACKS = 'FOUND_TRACKS';
 
 export const SET_SOCKET = 'SET_SOCKET';
 

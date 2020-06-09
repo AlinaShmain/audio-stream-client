@@ -1,6 +1,5 @@
-import React, {useState} from 'react';
+import React, {useState, useContext} from 'react';
 import {useDispatch} from "react-redux";
-import {signIn} from "../../actions/auth";
 import {Form, InputGroup, Button} from "react-bootstrap";
 import {
     faEye,
@@ -9,15 +8,20 @@ import {
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
 // import '../loginForm.css';
+import {onSuccessSignIn, onGoogleSignIn} from "../../actions/auth";
 import './SignInPage.css';
+import {AudioCtx} from "../AudioProvider/AudioProvider";
+import GoogleLogin from "react-google-login";
 
-const SignInPage = (props) => {
+const SignInPage = ({...props}) => {
     const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [show, toggle] = useState(false);
     const [checked, setChecked] = useState(false);
     const dispatch = useDispatch();
-    const signInAction = (credentials) => dispatch(signIn(credentials));
+    // const signInAction = (token, user) => dispatch(onSuccessSignIn(token, user));
+    const {socket} = useContext(AudioCtx);
 
     const handleCheckboxChange = (event) => {
         setChecked(event.target.checked);
@@ -30,6 +34,9 @@ const SignInPage = (props) => {
             case 'username':
                 setUsername(value);
                 break;
+            case 'email':
+                setEmail(value);
+                break;
             case 'password':
                 setPassword(value);
                 break;
@@ -41,25 +48,75 @@ const SignInPage = (props) => {
     const onSubmit = (event) => {
         event.preventDefault();
 
-        console.log({username, password})
+        console.log({username, password});
 
-        // signInAction({username, password});
+        const user = {
+            username: username,
+            email: email,
+            password: password
+        };
+        console.log(user);
+
+        socket.emit('signIn', {user}, (response) => {
+
+            console.log('response', response.token);
+
+            if (response.status === 'success') {
+
+                // signInAction(response.token, user);
+                localStorage.setItem("jwt-token", response.token);
+
+                dispatch(onSuccessSignIn(response.token, user));
+
+                console.log(props.history);
+                props.history.push("/");
+            }
+        });
+    };
+
+    const responseGoogle = (response) => {
+        console.log(response);
+
+        localStorage.setItem("jwt-google-token-id", response.tokenId);
+
+        const user = {
+            username: response.profileObj.name,
+            email: response.profileObj.email,
+        };
+
+        console.log(user.username);
+
+        dispatch(onGoogleSignIn(response.tokenId, user));
+
+        props.history.push("/");
     };
 
     return (
         <Form onSubmit={onSubmit} className='auth'>
-            <div className='btn-google'>
-                <a><span>Sign In With Google</span></a>
-            </div>
+            <GoogleLogin buttonText='Sign In With Google' onSuccess={responseGoogle} onFailure={responseGoogle}
+                         render={renderProps => (
+                             <button onClick={renderProps.onClick} className='btn-google' disabled={renderProps.disabled}>
+                                 Sign In With Google</button>
+                         )}
+                         clientId='593478516201-inith9u5kks4b27n6jal0d1dhkskuo91.apps.googleusercontent.com'/>
             <div className='div-line'><p className='line'>or</p></div>
             <div className='pt-0 pr-3 pl-3'>
-                <p>Sign up with your email address</p>
+                <p>Sign in with your email address</p>
                 <Form.Group controlId="formBasicUsername">
                     <Form.Control className='input-auth'
                                   type="text"
                                   name='username'
                                   value={username}
                                   placeholder='Username'
+                                  onChange={onInputChange}
+                    />
+                </Form.Group>
+                <Form.Group controlId="formBasicEmail">
+                    <Form.Control className='input-auth'
+                                  type="text"
+                                  name='email'
+                                  value={email}
+                                  placeholder='Email'
                                   onChange={onInputChange}
                     />
                 </Form.Group>

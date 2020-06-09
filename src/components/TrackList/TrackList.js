@@ -1,8 +1,31 @@
-import React from 'react';
+import React, {useContext, useRef} from 'react';
 
 import './TrackList.css';
+import {AudioCtx} from "../AudioProvider/AudioProvider";
+import {useSelector} from "react-redux";
 
-const TrackList = ({tracks, onTrackBtnClick}) => {
+const TrackList = ({tracks}) => {
+    const {onTrackBtnClick, onStopBtnClick, onPlayBtnClick} = useContext(AudioCtx);
+    const {isStarted, isPlaying} = useSelector(state => state.player);
+
+    const elemCurr = useRef(null);
+
+    const onTrackPress = (e) => {
+        const elemNew = e.target.parentElement;
+
+        if(isStarted) {
+            if(elemCurr.current !== elemNew) {
+                elemCurr.current = elemNew;
+                onTrackBtnClick(elemNew);
+            } else isPlaying ? onStopBtnClick() : onPlayBtnClick();
+        } else {
+            console.log('not started yet');
+            elemCurr.current = elemNew;
+
+            onTrackBtnClick(elemNew);
+        }
+    };
+
     return (
         <table className='tracks-tbl m-4 w-100'>
             <thead>
@@ -13,15 +36,18 @@ const TrackList = ({tracks, onTrackBtnClick}) => {
             </tr>
             </thead>
             <tbody className='table-body'>
-                {tracks ?
-                    tracks.map(({id, title, address, artist, album}, idx) => (
-                        <tr key={idx} className='table-row' data-id={id} onClick={onTrackBtnClick}>
-                            <td id='title'>{title}</td>
-                            <td id='artist'>{artist}</td>
-                            <td id='album'>{album}</td>
-                        </tr>
-                    )) : null
-                }
+            {tracks ?
+                tracks.map(({id, title, address, artist, album}, idx) => (
+                    <tr key={idx} className='table-row' data-id={id}
+                        // onClick={onTrackBtnClick}
+                        onClick={onTrackPress}
+                    >
+                        <td id='title'>{title}</td>
+                        <td id='artist'>{artist}</td>
+                        <td id='album'>{album}</td>
+                    </tr>
+                )) : null
+            }
             </tbody>
         </table>
     )

@@ -7,14 +7,13 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
-import audio from './audio';
 import Draggable from './Draggable';
 import './AudioPlayer.css';
 import {AudioCtx} from "../AudioProvider/AudioProvider";
 
 const AudioPlayer = ({...props}) => {
 
-    const {onPlayBtnClick, onStopBtnClick, onTimepointChange, onMuteClick, onUnmuteClick, onVolumeChange} = useContext(AudioCtx);
+    const {onPlayBtnClick, onStopBtnClick, onTimepointChange, onNextTrack, onMuteClick, onUnmuteClick, onVolumeChange} = useContext(AudioCtx);
 
     const {isStarted, isPlaying, title, artist, loadingProcess, currentTime, duration, isMuted, volume} = useSelector(state => state.player);
 
@@ -43,7 +42,7 @@ const AudioPlayer = ({...props}) => {
                                      className={isPlaying ? 'pause-icon' : 'play-icon'}
                                      onClick={isPlaying ? onStopBtnClick : onPlayBtnClick}
                                 />
-                                <div className='forward-icon' onClick={() => {}}/>
+                                <div className='forward-icon' onClick={onNextTrack}/>
                                 <div className='time'><span className='d-inline-block'>
                                         {duration.min}:{duration.sec}
                                 </span></div>
@@ -52,7 +51,7 @@ const AudioPlayer = ({...props}) => {
                             <React.Fragment>
                                 <div className='back-icon'/>
                                 <div className='play-icon' style={{color: '#6F716D'}}/>
-                                <div className='forward-icon' onClick={() => {}}/>
+                                <div className='forward-icon'/>
                             </React.Fragment>
                         }
                     </div>

@@ -1,10 +1,10 @@
 import * as types from '../constants/action_constants';
 import socketClient from "socket.io-client";
 
-const ENDPOINT = 'http://localhost:5000';
+// const ENDPOINT = 'http://localhost:5000';
 
 const initialState = {
-    socket: socketClient(ENDPOINT),
+    // socket: socketClient(ENDPOINT),
     isStarted: false,
     currentTime: {
         min: '00',
@@ -25,17 +25,18 @@ const initialState = {
     timepoint: 0,
     volume: 60,
     resumeVolume: 0,
+    tracks: [],
     playingIndex: null,
     playlist: null,
 };
 
 export default function player(state = initialState, action) {
     switch (action.type) {
-        case types.SET_SOCKET:
-            return {
-                ...state,
-                socket: action.socket
-            };
+        // case types.SET_SOCKET:
+        //     return {
+        //         ...state,
+        //         socket: action.socket
+        //     };
         case types.ON_START:
             return {
                 ...state,
@@ -104,6 +105,11 @@ export default function player(state = initialState, action) {
             return {
               ...state,
               volume: action.volume
+            };
+        case types.SET_FOUND_TRACKS:
+            return {
+                ...state,
+                tracks: action.tracks
             };
         default:
             return state;

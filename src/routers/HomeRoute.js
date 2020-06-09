@@ -1,15 +1,15 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import {Route, Redirect} from 'react-router-dom';
-import tokenUtils from "./tokenUtils";
+import tokenUtils from './tokenUtils';
 
-const AuthRoute = ({isAuthed: isAuthed, component: Component, ...rest}) => {
-    console.log('Auth Route');
+const HomeRoute = ({isAuthed: isAuthed, ...rest}) => {
+    console.log('Home Route');
     const [authed, setAuthed] = useState();
 
     useEffect(() => {
         isAuthed().then((result) => {
             console.log('result', result);
-            setAuthed(result);
+           setAuthed(result);
         });
         // return () => {debugger};
     }, []);
@@ -23,13 +23,13 @@ const AuthRoute = ({isAuthed: isAuthed, component: Component, ...rest}) => {
                     return null;
                 } else if(authed === true){
                     return (
-                    <Redirect
+                        <Redirect
                         to={{
                             pathname: `/home`
                         }}
                     />
                 ) } else { return (
-                    <Component {...props}/>
+                    <Redirect to={{pathname: '/join'}}/>
                 )}
             }
             }
@@ -37,4 +37,4 @@ const AuthRoute = ({isAuthed: isAuthed, component: Component, ...rest}) => {
     );
 };
 
-export default tokenUtils(AuthRoute);
+export default tokenUtils(HomeRoute);

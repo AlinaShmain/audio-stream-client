@@ -17,32 +17,14 @@ import {
     onVolumeChange
 } from '../../actions/player';
 
-// const socket = socketClient('http://localhost:5000');
+const socket = socketClient('http://localhost:5000');
 
 export const AudioCtx = React.createContext({});
 
-// window.AudioContext = window.AudioContext || window.webkitAudioContext;
-// let audioContext;
-// let gainNode;
-const getAudioContext = () => {
-    AudioContext = window.AudioContext;
-    const audioContext = new AudioContext();
-
-    // const gainNode = audioContext.createGain();
-
-    // let audioContext = ;
-
-    // return audioContext ? audioContext : new AudioContext();
-    return audioContext;
-};
-
-// const getGainNode = () => {
-//    return gainNode ? gainNode : getAudioContext().createGain();
-// };
 
 const AudioProvider = ({children}) => {
     const dispatch = useDispatch();
-    const {socket, volume} = useSelector(state => state.player);
+    const {volume} = useSelector(state => state.player);
 
     const audioCtxRef = useRef();
     const gainNodeRef = useRef();
@@ -50,7 +32,9 @@ const AudioProvider = ({children}) => {
     const fileDurationRef = useRef(0);
     const chunkSizeRef = useRef(0);
 
+    const idRef = useRef(1);
     const isStarted = useRef(false);
+    const isEnded = useRef(false);
     const sourcesRef = useRef([]);
     const audioBufferRef = useRef(null);
     const startTimeRef = useRef(0);
@@ -64,7 +48,6 @@ const AudioProvider = ({children}) => {
     const volumeRef = useRef(1);
     const nextTimeRef = useRef(0);
     const chunksRef = useRef([]);
-
 
     useEffect(() => {
         window.AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -107,67 +90,70 @@ const AudioProvider = ({children}) => {
         }, 1000);
     };
 
-    // const playWhileLoading = setInterval(() => {
-    //     console.log('chunks length', chunksRef.current.length);
-    //     if (chunksRef.current.length !== 0) {
-    //         let chunk = chunksRef.current.shift();
-    //         audioCtxRef.current.decodeAudioData(chunk)
-    //             .then((audioBufferChunk) => {
-    //                 console.log('decodedChunk', audioBufferChunk);
-    //
-    //                 audioBufferRef.current = audioBufferRef.current
-    //                     ? appendBuffer(audioBufferRef.current, audioBufferChunk)
-    //                     : audioBufferChunk;
-    //
-    //                 console.log('chunk size', chunk.length);
-    //                 console.log('audiobuffer size ', audioBufferChunk.length);
-    //
-    //                 loadRateRef.current += (chunk.length * 100) / fileSizeRef.current;
-    //
-    //                 let source = audioCtxRef.current.createBufferSource();
-    //                 source.buffer = audioBufferRef.current;
-    //
-    //                 source.connect(gainNodeRef.current);
-    //
-    //                 // const gainNode = audioCtxRef.current.createGain();
-    //                 // source.connect(gainNode);
-    //                 // gainNode.connect(audioCtxRef.current.destination);
-    //
-    //                 gainNodeRef.current.connect(audioCtxRef.current.destination);
-    //
-    //                 sourcesRef.current.push(source);
-    //                 console.log('sourcesRef', sourcesRef.current);
-    //
-    //                 // if(!activeSource) {
-    //                 //     activeSource = sourcesRef.current.shift();
-    //                 // }
-    //                 //
-    //                 // source.onended = () => {
-    //                 //     activeSource = sourcesRef.current.shift();
-    //                 //     // sourcesRef.current.shift();
-    //                 //     console.log('end playing');
-    //                 //     console.log(sourcesRef.current);
-    //                 // };
-    //
-    //                 console.log('audioBuffer', audioBufferChunk);
-    //
-    //                 if (isPlayingRef.current) {
-    //                     console.log('playing !!');
-    //
-    //                     if (startTimeRef.current === 0) {
-    //                         startTimeRef.current = audioCtxRef.current.currentTime + audioCtxRef.current.baseLatency;
-    //                         console.log('startTimeRef', startTimeRef.current);
-    //                         updateTime();
-    //                     }
-    //
-    //                     // console.log(audioBuffer);
-    //                     source.start(startTimeRef.current + nextTimeRef.current, audioBufferRef.current.duration - audioBufferChunk.duration, audioBufferChunk.duration);
-    //                     // source.start(startTime + nextTime, source.buffer.duration - audioBufferChunk.duration, audioBufferChunk.duration);
-    //                     nextTimeRef.current += audioBufferChunk.duration - 0.05;
-    //                 }
-    //             });
-    //     }
-    // }, 500);
+    const playWhileLoading = setInterval(() => {
+        console.log('chunks length', chunksRef.current.length);
+        if (chunksRef.current.length !== 0) {
+            let chunk = chunksRef.current.shift();
+            audioCtxRef.current.decodeAudioData(chunk)
+                .then((audioBufferChunk) => {
+                    console.log('decodedChunk', audioBufferChunk);
+
+                    audioBufferRef.current = audioBufferRef.current
+                        ? appendBuffer(audioBufferRef.current, audioBufferChunk)
+                        : audioBufferChunk;
+
+                    console.log('chunk size', chunk.length);
+                    console.log('audiobuffer size ', audioBufferChunk.length);
+
+                    loadRateRef.current += (chunk.length * 100) / fileSizeRef.current;
+
+                    let source = audioCtxRef.current.createBufferSource();
+                    source.buffer = audioBufferRef.current;
+
+                    source.connect(gainNodeRef.current);
+
+                    // const gainNode = audioCtxRef.current.createGain();
+                    // source.connect(gainNode);
+                    // gainNode.connect(audioCtxRef.current.destination);
+
+                    gainNodeRef.current.connect(audioCtxRef.current.destination);
+
+                    sourcesRef.current.push(source);
+                    console.log('sourcesRef', sourcesRef.current);
+
+                    // if(!activeSource) {
+                    //     activeSource = sourcesRef.current.shift();
+                    // }
+                    //
+                    // source.onended = () => {
+                    //     activeSource = sourcesRef.current.shift();
+                    //     // sourcesRef.current.shift();
+                    //     console.log('end playing');
+                    //     console.log(sourcesRef.current);
+                    // };
+
+                    console.log('audioBuffer', audioBufferChunk);
+
+                    if (isPlayingRef.current) {
+                        console.log('playing !!');
+
+                        if (startTimeRef.current === 0) {
+                            startTimeRef.current = audioCtxRef.current.currentTime + audioCtxRef.current.baseLatency;
+                            console.log('startTimeRef', startTimeRef.current);
+                            updateTime();
+                        }
+
+                        // console.log(audioBuffer);
+                        source.start(startTimeRef.current + nextTimeRef.current, audioBufferRef.current.duration - audioBufferChunk.duration, audioBufferChunk.duration);
+                        // source.start(startTime + nextTime, source.buffer.duration - audioBufferChunk.duration, audioBufferChunk.duration);
+                        nextTimeRef.current += audioBufferChunk.duration - 0.05;
+                    }
+                })
+                .catch((e) => {
+                    console.log('decoding error', e);
+                });
+        }
+    }, 500);
 
     const stopPlaying = () => {
 
@@ -217,70 +203,118 @@ const AudioProvider = ({children}) => {
         isPlayingRef.current = true;
     };
 
+    const endPlaying = (timepoint) => {
+        return new Promise( (res, rej) => {
+            console.log('end playing');
+            console.log(isPlayingRef.current);
+            console.log(sourcesRef.current);
+            if (sourcesRef.current && sourcesRef.current.length) {
+                stopPlaying();
+                console.log('stopplaying');
+
+                socket.emit('stopLoad', (response) => {
+                    if(response) {
+                        console.log('stopped');
+
+                        chunksRef.current = [];
+                        sourcesRef.current = [];
+                        isPlayingRef.current = true;
+                        startTimeRef.current = 0;
+                        playedDurationRef.current = 0;
+                        currTimeRef.current = (fileDurationRef.current * timepoint) / 100;
+                        loadRateRef.current = 0;
+                        nextTimeRef.current = 0;
+                        audioBufferRef.current = null;
+
+                        res(response);
+                    }
+                });
+            } else {
+                console.log('first playing');
+                res('stopped');
+            }
+        });
+    };
+
     const playByTimepoint = (timepoint) => {
 
         console.log(isStarted.current);
-        if(isStarted.current) {
-            if (isPlayingRef.current && sourcesRef.current && sourcesRef.current.length) {
-                stopPlaying();
+        if (isStarted.current) {
+            console.log('before promise');
+            endPlaying(timepoint).then((response) => {
+                // debugger;
+                // if(timepoint >= audioBufferRef.current.duration) {
+                if(response) {
+                    const numOfChunks = fileSizeRef.current / chunkSizeRef.current;
+                    console.log('chunkSize_', chunkSizeRef.current);
 
-                // chunks = [];
-                chunksRef.current = [];
-                sourcesRef.current = [];
-                // isPlayingRef.current = true;
-                startTimeRef.current = 0;
-                playedDurationRef.current = 0;
-                currTimeRef.current = (fileDurationRef.current * timepoint) / 100;
-                loadRateRef.current = 0;
-                nextTimeRef.current = 0;
-                audioBufferRef.current = null;
+                    const chunkNum = Math.floor((timepoint * numOfChunks) / 100);
+                    console.log('chunkNum', chunkNum);
 
-                socket.emit('stopLoad', () => {
-                    console.log('stopped');
+                    const startSize = (fileSizeRef.current * timepoint) / 100;
+                    console.log('startSize', startSize);
 
-                    isPlayingRef.current = true;
-                });
-            }
-            console.log('playByTimepoint');
+                    // debugger;
 
-            // if(timepoint >= audioBufferRef.current.duration) {
-            const numOfChunks = fileSizeRef.current / chunkSizeRef.current;
-            console.log('chunkSize_', chunkSizeRef.current);
-
-            const chunkNum = Math.floor((timepoint * numOfChunks) / 100);
-            console.log('chunkNum', chunkNum);
-
-            socket.emit('play', {
-                // chunkNumber: chunkNum,
-                // startSize: chunkNum * chunkSizeRef.current
-                startSize: 2320003
+                    socket.emit('play', {
+                        startSize: startSize
+                    });
+                }
             });
-
-            // } else {
-            //     const timepointInSec = (fileDurationRef.current * timepoint) / 100;
-            //     resumePlaying(timepointInSec);
+            // if (isPlayingRef.current && sourcesRef.current && sourcesRef.current.length) {
+            //     stopPlaying();
+            //
+            //     socket.emit('stopLoad', () => {
+            //         console.log('stopped');
+            //
+            //         chunksRef.current = [];
+            //         sourcesRef.current = [];
+            //         isPlayingRef.current = true;
+            //         startTimeRef.current = 0;
+            //         playedDurationRef.current = 0;
+            //         currTimeRef.current = (fileDurationRef.current * timepoint) / 100;
+            //         loadRateRef.current = 0;
+            //         nextTimeRef.current = 0;
+            //         audioBufferRef.current = null;
+            //     });
             // }
+            // console.log('playByTimepoint');
+            //
+            // // if(timepoint >= audioBufferRef.current.duration) {
+            // const numOfChunks = fileSizeRef.current / chunkSizeRef.current;
+            // console.log('chunkSize_', chunkSizeRef.current);
+            //
+            // const chunkNum = Math.floor((timepoint * numOfChunks) / 100);
+            // console.log('chunkNum', chunkNum);
+            //
+            // const startSize = (fileSizeRef.current * timepoint) / 100;
+            // console.log('startSize', startSize);
+            //
+            // socket.emit('play', {
+            //     // startSize: chunkNum * chunkSizeRef.current
+            //     startSize: startSize
+            //     // startSize: 2320003
+            // });
+            //
+            // // } else {
+            // //     const timepointInSec = (fileDurationRef.current * timepoint) / 100;
+            // //     resumePlaying(timepointInSec);
+            // // }
         }
     };
 
-    const onTrackBtnClick = (e) => {
-        const trackHTML = e.target.parentElement;
+    const concat = (buffer1, buffer2) => {
+        const tmp = new Uint8Array(buffer1.byteLength + buffer2.byteLength);
 
-        const id = trackHTML.getAttribute('data-id');
-        const title = trackHTML.cells[0].innerText;
-        const artist = trackHTML.cells[1].innerHTML;
+        tmp.set(new Uint8Array(buffer1), 0);
+        tmp.set(new Uint8Array(buffer2), buffer1.byteLength);
 
-        dispatch(onStart());
-        isStarted.current = true;
-        dispatch(onTitleUpdate(title));
-        dispatch(onArtistUpdate(artist));
-        dispatch(onPlay());
+        return tmp.buffer;
+    };
 
-        socket.emit('track', (e) => {
-        });
-
+    useEffect(() => {
         socket.on('metadata', ({fileSize, chunkSize, fileDuration}) => {
-            console.log('metadata');
+            console.log('metadata', {fileSize, chunkSize, fileDuration});
 
             fileSizeRef.current = fileSize;
             chunkSizeRef.current = chunkSize;
@@ -291,58 +325,74 @@ const AudioProvider = ({children}) => {
             playByTimepoint(0);
         });
 
-        nextTimeRef.current = 0;
-
-        let buffer = null;
-
-        socket.on('end', function () {
-            console.log(`audio received ${buffer}`);
-
-            audioContext.decodeAudioData(buffer).then(b => {
-                let source = audioContext.createBufferSource();
-                source.buffer = b;
-                source.connect(audioContext.destination);
-                source.start();
-            });
-        });
+        // let buffer = null;
 
         socket.on('audio', (chunk_) => {
             console.log('receivedChunk', chunk_);
-            // debugger;
 
-            // chunks.push(chunk_);
-            // chunksRef.current.push(chunk_);
-            buffer = buffer ? concat(buffer, chunk_) : chunk_;
+            chunksRef.current.push(chunk_);
+            // buffer = buffer ? concat(buffer, chunk_) : chunk_;
         });
 
         socket.on('end', () => {
-            // clearInterval(playWhileLoading);
-
-            audioBufferRef.current.decodeAudioData(buffer).then(b => {
-                let source = audioCtxRef.current.createBufferSource();
-                source.buffer = b;
-                source.connect(audioCtxRef.current.destination);
-                source.start();
-            });
-            // source.buffer = chunksRef.current.reduce((chunk1, chunk2) => appendBuffer(chunk1, chunk2));
-            // source.buffer = await new Promise((resolve, reject) => {
-            //     while (chunksRef.current.length !== 0) {
-            //         let chunk = chunksRef.current.shift();
-            //         audioCtxRef.current.decodeAudioData(chunk)
-            //             .then((audioBufferChunk) => {
-            //                 console.log('decodedChunk', audioBufferChunk);
-            //
-            //                 audioBufferRef.current = audioBufferRef.current
-            //                     ? appendBuffer(audioBufferRef.current, audioBufferChunk)
-            //                     : audioBufferChunk;
-            //             });
-            //         if(chunksRef.current.length === 0) {
-            //             console.log('end');
-            //             resolve(audioBufferRef.current);
-            //         }
-            //     }
-            // });
+            isEnded.current = true;
+        //     // clearInterval(playWhileLoading);
+        //     // const promises = chunksRef.current.map((chunk) => {
+        //     //     return new Promise((resolve, reject) => {
+        //     //         audioCtxRef.current.decodeAudioData(chunk).then((audioBufferChunk) => {
+        //     //             console.log('decoded');
+        //     //
+        //     //             resolve(audioBufferChunk);
+        //     //         });
+        //     //     });
+        //     // });
+        //     // let buffers = await Promise.all(promises);
+        //     // console.log(buffers);
+        //     // const audioBuffer = buffers.reduce((buffer1, buffer2) => appendBuffer(buffer1, buffer2));
+        //     //
+        //     console.log('start playing');
+        //     // let source = audioCtxRef.current.createBufferSource();
+        //     // source.buffer = audioBuffer;
+        //     // source.connect(audioCtxRef.current.destination);
+        //     // source.start();
+        //     // audioCtxRef.current.decodeAudioData(buffer).then(b => {
+        //     //     console.log('decoded', b);
+        //     //     let source = audioCtxRef.current.createBufferSource();
+        //     //     source.buffer = b;
+        //     //     source.connect(audioCtxRef.current.destination);
+        //     //     source.start();
+        //     // });
+        //
+        //     buffer = chunksRef.current.reduce((chunk1, chunk2) => concat(chunk1, chunk2));
+        //     console.log(buffer);
+        //     audioCtxRef.current.decodeAudioData(buffer).then(b => {
+        //         console.log('decoded', b);
+        //         let source = audioCtxRef.current.createBufferSource();
+        //         source.buffer = b;
+        //         source.connect(audioCtxRef.current.destination);
+        //         source.start();
+        //     });
         });
+    }, []);
+
+    const onTrackBtnClick = (trackHTML) => {
+        // const trackHTML = e.target.parentElement;
+
+        const id = trackHTML.getAttribute('data-id');
+        const title = trackHTML.cells[0].innerText;
+        const artist = trackHTML.cells[1].innerHTML;
+
+        dispatch(onStart());
+        isStarted.current = true;
+        idRef.current = id;
+        dispatch(onTitleUpdate(title));
+        dispatch(onArtistUpdate(artist));
+        dispatch(onPlay());
+
+        socket.emit('track', {id}, (e) => {
+        });
+
+        nextTimeRef.current = 0;
     };
 
     const onPlayBtnClick = () => {
@@ -387,6 +437,23 @@ const AudioProvider = ({children}) => {
         }
     };
 
+    const onNextTrack = () => {
+
+
+        ++(idRef.current);
+        const elem = document.querySelector(`tr[data-id='${idRef.current}']`);
+        console.log('next track', elem);
+        elem && onTrackBtnClick(elem);
+    };
+
+    const onPreviousTrack = () => {
+        --(idRef.current);
+        const elem = document.querySelector(`tr[data-id='${idRef.current}']`);
+        console.log('previous track', elem);
+
+        elem ? onTrackBtnClick(elem) : onTrackBtnClick(document.querySelector(`tr[data-id='${++idRef.current}']`));
+    };
+
     const setVolume = (level) => {
         gainNodeRef.current.gain.setValueAtTime(level, audioCtxRef.current.currentTime);
     };
@@ -417,10 +484,13 @@ const AudioProvider = ({children}) => {
     return (
         <AudioCtx.Provider
             value={{
+                socket: socket,
                 onPlayBtnClick: onPlayBtnClick,
                 onStopBtnClick: onStopBtnClick,
                 onTimepointChange: playByTimepoint,
                 onTrackBtnClick: onTrackBtnClick,
+                onNextTrack: onNextTrack,
+                onPreviousTrack: onPreviousTrack,
                 onMuteClick: onMuteClick,
                 onUnmuteClick: onUnmuteClick,
                 onVolumeChange: volumeChange

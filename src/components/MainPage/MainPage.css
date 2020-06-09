@@ -145,3 +145,25 @@
     border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
 }
+
+.user-name {
+    color: white;
+}
+
+.log-out-icon {
+    display: inline-block;
+    position: relative;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+}
+
+.log-out-icon:before {
+    position: absolute;
+    content: '';
+    width: 30px;
+    height: 30px;
+    left: 0;
+    background: url('../log-out.svg') no-repeat center;
+    background-size: cover;
+}
